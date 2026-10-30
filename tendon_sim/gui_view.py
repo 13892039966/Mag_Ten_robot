@@ -1,5 +1,5 @@
 """Qt window rendering the actual SOFA scene through Sofa.SofaGL (no physics copy)."""
-import time
+import time,json
 import numpy as np
 from scipy.spatial.transform import Rotation
 from PySide6.QtCore import Qt
@@ -70,6 +70,7 @@ class SofaViewport(QOpenGLWidget):
 class SofaWindow:
     def __init__(self, h, reference, original_mesh):
         self.h=h;self.reference=reference;self.paused=False;self.closed=False;self.last_render=0.;self.last_capture=time.monotonic()
+        self.visual_checks=0;self.max_visual_error_m=0.
         self.last_goal=reference.target(0)[0]
         fmt=QSurfaceFormat();fmt.setVersion(2,1);fmt.setProfile(QSurfaceFormat.CompatibilityProfile);fmt.setDepthBufferSize(24)
         QSurfaceFormat.setDefaultFormat(fmt)
@@ -80,15 +81,22 @@ class SofaWindow:
         root.addObject('VisualStyle',displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideForceFields hideInteractionForceFields')
         wall=visual.addChild('RealColonWall');wall.addObject('MeshSTLLoader',name='mesh',filename=str(original_mesh),flipNormals=False)
         wall.addObject('OglModel',src='@mesh',color=[.85,.48,.42,.2])
-        self.models=[]
+        self.models=[];self.visual_states=[]
         poses=np.asarray(h['state'].position.value);boundary=h['definition']['active_index']
         self.slices=[slice(0,boundary+1),slice(boundary,None)]
         for name,part,color in zip(['Passive','Active'],self.slices,[[.15,.42,.8,1.],[1.,.55,.08,1.]]):
             points,triangles=tube_mesh(poses[part],h['config'].radius_m)
-            self.models.append(visual.addChild(name).addObject('OglModel',position=points.tolist(),triangles=triangles,color=color))
+            node=visual.addChild(name)
+            state=node.addObject('MechanicalObject',name='vertices',template='Vec3d',position=points.tolist())
+            model=node.addObject('OglModel',name='surface',position=points.tolist(),triangles=triangles,color=color)
+            node.addObject('IdentityMapping',input=state.getLinkPath(),output=model.getLinkPath(),mapForces=False,mapMasses=False)
+            self.models.append(model);self.visual_states.append(state)
         self.goal_shape=np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])*.0015
         faces=[[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]]
-        self.goal=visual.addChild('CurrentTarget').addObject('OglModel',position=(self.goal_shape+self.last_goal).tolist(),triangles=faces,color=[.9,.05,.05,1.])
+        goal_node=visual.addChild('CurrentTarget')
+        self.goal_state=goal_node.addObject('MechanicalObject',name='vertices',template='Vec3d',position=(self.goal_shape+self.last_goal).tolist())
+        self.goal=goal_node.addObject('OglModel',name='surface',position=(self.goal_shape+self.last_goal).tolist(),triangles=faces,color=[.9,.05,.05,1.])
+        goal_node.addObject('IdentityMapping',input=self.goal_state.getLinkPath(),output=self.goal.getLinkPath(),mapForces=False,mapMasses=False)
         self.window=QWidget();self.window.setWindowTitle('SOFA 25.06 | %g ms physics | waypoint arrival %g mm'%(h['config'].dt*1000,reference.arrival_radius_m*1000))
         self.window.resize(1250,850)
         layout=QVBoxLayout(self.window);self.status=QLabel('Initializing actual SOFA scene…');layout.addWidget(self.status)
@@ -119,11 +127,18 @@ class SofaWindow:
         if not force and now-self.last_render<1/25:return
         self.last_render=now
         poses=np.asarray(self.h['state'].position.value)
-        for model,part in zip(self.models,self.slices):
-            points,_=tube_mesh(poses[part],self.h['config'].radius_m);model.position.value=points.tolist()
+        for state,part in zip(self.visual_states,self.slices):
+            points,_=tube_mesh(poses[part],self.h['config'].radius_m);state.position.value=points.tolist()
         self.last_goal=self.reference.target(trial.ticks*self.h['config'].dt)[0]
-        self.goal.position.value=(self.goal_shape+self.last_goal).tolist()
+        self.goal_state.position.value=(self.goal_shape+self.last_goal).tolist()
         Sofa.Simulation.updateVisual(self.h['root'])
+        for state,model in zip(self.visual_states+[self.goal_state],self.models+[self.goal]):
+            error=float(np.max(np.abs(np.asarray(state.position.value)-np.asarray(model.position.value))))
+            if error>2e-7:raise RuntimeError('SOFA visual mapping diverged from actual vertex positions')
+            self.max_visual_error_m=max(self.max_visual_error_m,error)
+        self.visual_checks+=1
+        if trial.done:
+            (trial.output/'gui_visual_verification.json').write_text(json.dumps(dict(verified=True,samples=self.visual_checks,max_vertex_error_m=self.max_visual_error_m,backend='Sofa.SofaGL with IdentityMapping',scope='Mapped visual vertices match actual pose-derived geometry; display refresh does not step physics'),indent=2))
         error=np.linalg.norm(poses[-1,:3]-self.last_goal)*1000
         reason=trial.summary['reason'] if trial.done else ('PAUSED' if self.paused else 'RUNNING')
         self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival 3 mm | feed %.1f mm | drag to rotate / wheel to zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.h['feed_m']*1000))
