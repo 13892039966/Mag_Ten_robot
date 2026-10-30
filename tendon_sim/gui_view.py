@@ -3,10 +3,10 @@ import time,json
 import numpy as np
 from scipy.spatial.transform import Rotation
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QSurfaceFormat
+from PySide6.QtGui import QSurfaceFormat, QPainter
 from PySide6.QtOpenGL import QOpenGLFunctions_2_1
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy
 
 from .physics import Sofa, SofaRuntime
 import Sofa.SofaGL
@@ -29,7 +29,7 @@ class SofaViewport(QOpenGLWidget):
     def __init__(self, root, parent):
         super().__init__(parent)
         self.root=root;self.center=np.zeros(3);self.distance=1.;self.yaw=-55.;self.pitch=65.;self.last=None
-        self.ready=False;self.failure=None
+        self.ready=False;self.failure=None;self.meshes=[]
 
     def initializeGL(self):
         try:
@@ -58,6 +58,20 @@ class SofaViewport(QOpenGLWidget):
         g.glTranslated(0,0,-self.distance)
         g.glRotated(self.pitch,1,0,0);g.glRotated(self.yaw,0,0,1);g.glTranslated(*(-self.center))
         Sofa.SofaGL.draw(self.root)
+        # Draw the current physical-pose meshes directly: no stale Ogl VBO or
+        # deferred mechanical mapping can leave a previous frame on screen.
+        g.glPushAttrib(0x000FFFFF)
+        g.glDisable(0x0B50);g.glDisable(0x0B57)
+        for points,triangles,color in self.meshes:
+            faces=points[triangles]
+            normals=np.cross(faces[:,1]-faces[:,0],faces[:,2]-faces[:,0])
+            normals/=np.maximum(np.linalg.norm(normals,axis=1)[:,None],1e-30)
+            g.glColor4f(*color);g.glBegin(0x0004)
+            for face,normal in zip(faces,normals):
+                g.glNormal3d(*normal)
+                for point in face:g.glVertex3d(*point)
+            g.glEnd()
+        g.glPopAttrib()
 
     def mousePressEvent(self,event):self.last=event.position()
     def mouseMoveEvent(self,event):
@@ -81,29 +95,24 @@ class SofaWindow:
         root.addObject('VisualStyle',displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideForceFields hideInteractionForceFields')
         wall=visual.addChild('RealColonWall');wall.addObject('MeshSTLLoader',name='mesh',filename=str(original_mesh),flipNormals=False)
         wall.addObject('OglModel',src='@mesh',color=[.85,.48,.42,.2])
-        self.models=[];self.visual_states=[]
         poses=np.asarray(h['state'].position.value);boundary=h['definition']['active_index']
         self.slices=[slice(0,boundary+1),slice(boundary,None)]
-        for name,part,color in zip(['Passive','Active'],self.slices,[[.15,.42,.8,1.],[1.,.55,.08,1.]]):
-            points,triangles=tube_mesh(poses[part],h['config'].radius_m)
-            node=visual.addChild(name)
-            state=node.addObject('MechanicalObject',name='vertices',template='Vec3d',position=points.tolist())
-            model=node.addObject('OglModel',name='surface',position=points.tolist(),triangles=triangles,color=color)
-            node.addObject('IdentityMapping',input=state.getLinkPath(),output=model.getLinkPath(),mapForces=False,mapMasses=False)
-            self.models.append(model);self.visual_states.append(state)
+        self.triangles=[np.asarray(tube_mesh(poses[part],h['config'].radius_m)[1],dtype=int) for part in self.slices]
+        self.colors=[[.15,.42,.8,1.],[1.,.55,.08,1.]]
         self.goal_shape=np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])*.0015
-        faces=[[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]]
-        goal_node=visual.addChild('CurrentTarget')
-        self.goal_state=goal_node.addObject('MechanicalObject',name='vertices',template='Vec3d',position=(self.goal_shape+self.last_goal).tolist())
-        self.goal=goal_node.addObject('OglModel',name='surface',position=(self.goal_shape+self.last_goal).tolist(),triangles=faces,color=[.9,.05,.05,1.])
-        goal_node.addObject('IdentityMapping',input=self.goal_state.getLinkPath(),output=self.goal.getLinkPath(),mapForces=False,mapMasses=False)
+        self.goal_faces=np.array([[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]])
         self.window=QWidget();self.window.setWindowTitle('SOFA 25.06 | %g ms physics | waypoint arrival %g mm'%(h['config'].dt*1000,reference.arrival_radius_m*1000))
         self.window.resize(1250,850)
-        layout=QVBoxLayout(self.window);self.status=QLabel('Initializing actual SOFA scene…');layout.addWidget(self.status)
+        layout=QVBoxLayout(self.window);layout.setContentsMargins(6,6,6,6);layout.setSpacing(4)
         bar=QHBoxLayout();layout.addLayout(bar)
         for text,callback in [('Pause / Resume',self.toggle_pause),('Colon view',lambda:self.camera(False)),('Whole body',lambda:self.camera(True)),('Stop and save',self.stop)]:
             button=QPushButton(text);button.clicked.connect(callback);bar.addWidget(button)
-        self.viewport=SofaViewport(root,self.window);layout.addWidget(self.viewport)
+        self.viewport=SofaViewport(root,self.window)
+        self.viewport.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        layout.addWidget(self.viewport,1)
+        self.status=QLabel('Initializing actual SOFA scene…')
+        self.status.setFixedHeight(26);self.status.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
+        layout.addWidget(self.status,0)
         self.window.closeEvent=lambda event:self.stop()
         self.camera(False)
 
@@ -127,18 +136,20 @@ class SofaWindow:
         if not force and now-self.last_render<1/25:return
         self.last_render=now
         poses=np.asarray(self.h['state'].position.value)
-        for state,part in zip(self.visual_states,self.slices):
-            points,_=tube_mesh(poses[part],self.h['config'].radius_m);state.position.value=points.tolist()
+        meshes=[]
+        for part,triangles,color in zip(self.slices,self.triangles,self.colors):
+            points,_=tube_mesh(poses[part],self.h['config'].radius_m)
+            center_error=float(np.max(np.abs(points.reshape(-1,12,3).mean(axis=1)-poses[part,:3])))
+            if center_error>1e-9:raise RuntimeError('Displayed mesh centers do not match actual physical nodes')
+            self.max_visual_error_m=max(self.max_visual_error_m,center_error)
+            meshes.append((points,triangles,color))
         self.last_goal=self.reference.target(trial.ticks*self.h['config'].dt)[0]
-        self.goal_state.position.value=(self.goal_shape+self.last_goal).tolist()
+        meshes.append((self.goal_shape+self.last_goal,self.goal_faces,[.9,.05,.05,1.]))
+        self.viewport.meshes=meshes
         Sofa.Simulation.updateVisual(self.h['root'])
-        for state,model in zip(self.visual_states+[self.goal_state],self.models+[self.goal]):
-            error=float(np.max(np.abs(np.asarray(state.position.value)-np.asarray(model.position.value))))
-            if error>2e-7:raise RuntimeError('SOFA visual mapping diverged from actual vertex positions')
-            self.max_visual_error_m=max(self.max_visual_error_m,error)
         self.visual_checks+=1
         if trial.done:
-            (trial.output/'gui_visual_verification.json').write_text(json.dumps(dict(verified=True,samples=self.visual_checks,max_vertex_error_m=self.max_visual_error_m,backend='Sofa.SofaGL with IdentityMapping',scope='Mapped visual vertices match actual pose-derived geometry; display refresh does not step physics'),indent=2))
+            (trial.output/'gui_visual_verification.json').write_text(json.dumps(dict(verified=True,samples=self.visual_checks,max_center_error_m=self.max_visual_error_m,backend='SOFA wall renderer + immediate pose-derived meshes',scope='Every displayed robot mesh rebuilt from current physical poses; display refresh does not step physics'),indent=2))
         error=np.linalg.norm(poses[-1,:3]-self.last_goal)*1000
         reason=trial.summary['reason'] if trial.done else ('PAUSED' if self.paused else 'RUNNING')
         self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival 3 mm | feed %.1f mm | drag to rotate / wheel to zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.h['feed_m']*1000))
@@ -148,4 +159,8 @@ class SofaWindow:
             self.screenshot(temporary);temporary.replace(latest);self.last_capture=now
 
     def screenshot(self,path):self.viewport.grabFramebuffer().save(str(path))
+    def screenshot_window(self,path):
+        frame=self.window.grab();painter=QPainter(frame)
+        painter.drawImage(self.viewport.pos(),self.viewport.grabFramebuffer());painter.end()
+        frame.save(str(path))
     def close(self):self.window.hide();self.window.deleteLater();self.app.processEvents()

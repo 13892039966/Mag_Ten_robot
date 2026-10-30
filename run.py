@@ -92,7 +92,7 @@ def main():
         initial=trial.safety.check(np.asarray(h['collision'].position.value),'',[])
         if initial['invalid_reason']:trial.finish('invalid_initial_state',initial['invalid_reason'])
         if view:
-            view.show();view.process(trial,force=True);view.screenshot(a.output/'gui_first.png')
+            view.show();view.process(trial,force=True);view.screenshot(a.output/'gui_first.png');view.screenshot_window(a.output/'gui_window_first.png')
         setup=time.perf_counter()-began;elapsed=cpu=0.
         while not trial.done:
             if view:
@@ -108,7 +108,7 @@ def main():
             w,cp=time.perf_counter(),time.process_time();Sofa.Simulation.animate(root,c.dt)
             elapsed+=time.perf_counter()-w;cpu+=time.process_time()-cp
         if view:
-            view.process(trial,force=True);view.screenshot(a.output/'gui_final.png')
+            view.process(trial,force=True);view.screenshot(a.output/'gui_final.png');view.screenshot_window(a.output/'gui_window_final.png')
         reader=RecordingReader(a.output/'physical_recording');reader.verify()
         assert reader.frame_count==trial.ticks+1
         np.testing.assert_array_equal(reader.frame(reader.frame_count-1)['poses'],h['state'].position.value)

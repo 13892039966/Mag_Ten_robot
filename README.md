@@ -113,3 +113,5 @@ python setup/sample_trajectory.py assets/original/centerline_world_m.csv /新的
 使用现有SOFA25.06的Sofa.SofaGL渲染和独立环境内的PySide6窗口；本环境没有官方Qt/ImGui GUI插件，未混装其他版本。窗口显示真实原始管壁、实际节点姿态生成的镜身表面和当前目标。显示更新不替代或跳过物理步进。支持拖动旋转、滚轮缩放、结肠/全身视角、暂停及停止保存。关闭窗口按人为中断保存，不算通过。运行中保存gui_latest.png，首末帧为gui_first.png/gui_final.png。
 
 GUI可视开销独立于animate计时，总现实耗时仍包含窗口开销。默认结束后执行分析和GIF生成。10mm/3mm是当前默认外部轨迹和到达条件，不是出口特殊控制。
+
+界面布局：顶部按钮栏、中间自适应三维视口、底部固定26像素状态栏。管壁由SOFA绘制；镜身表面每次显示刷新直接从当前物理节点姿态重建并绘制，避免Ogl缓存或延迟映射导致画面停在旧状态。显示顶点不参与物理求解。
