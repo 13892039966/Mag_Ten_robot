@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--no-gif',action='store_true',help='Skip automatic route analysis and wall GIF')
     parser.add_argument('--gif-sample-seconds',type=float,default=1.,help='Simulation seconds between GIF frames (default: 1)')
     parser.add_argument('--gif-frame-ms',type=int,default=100,help='GIF frame duration in milliseconds (default: 100)')
+    parser.add_argument('--arrival-radius-mm',type=float,default=5.,help='Waypoint arrival radius in millimetres (default: 5)')
     parser.add_argument('--trajectory',type=Path,default=Path(__file__).resolve().parent/'assets/trajectories/centerline_10mm.csv',help='Ordered CSV x_m,y_m,z_m in world metres; no resampling')
     parser.add_argument('--controller-config',type=Path,help='JSON control parameters; physical limits unchanged')
     parser.add_argument('--wall-seconds',type=float,default=None,help='Optional experiment wall-time limit')
@@ -29,6 +30,7 @@ def main():
     import math
     if any(not isinstance(v,(int,float)) or not math.isfinite(v) or v<=0 for v in controller_config.values()):parser.error('Controller parameters must be finite and positive')
     if any(controller_config.get(k,1)>1 for k in ['feed_speed_scale','cable_speed_scale']):parser.error('Speed scales cannot exceed original physical speed limits')
+    if not math.isfinite(a.arrival_radius_mm) or a.arrival_radius_mm<=0:parser.error('Invalid arrival radius')
     if a.wall_seconds is not None and (not math.isfinite(a.wall_seconds) or a.wall_seconds<=0):parser.error('Invalid wall limit')
     if not 0<a.gif_sample_seconds<float('inf') or a.gif_frame_ms<10:parser.error('GIF sampling must be finite and positive; frame duration must be >=10ms')
     if a.seconds is None and not a.until_terminal:a.seconds=1.
@@ -51,7 +53,7 @@ def main():
     d=body_layout(c,entry=g['entry_position_m'],direction=g['entry_direction'],insertion=0.)
     trajectory_path=a.trajectory.resolve()
     trajectory_bytes=trajectory_path.read_bytes()
-    reference=RouteReference(load_trajectory(trajectory_path))
+    reference=RouteReference(load_trajectory(trajectory_path),arrival_radius_m=a.arrival_radius_mm/1000.)
     trajectory=dict(path=str(trajectory_path),sha256=hashlib.sha256(trajectory_bytes).hexdigest(),points=len(reference.route),unit='m',coordinate_frame='world',arrival_radius_m=reference.arrival_radius_m,mode='ordered_waypoints')
     g=dict(g,mesh_path=str(Path(__file__).resolve().parent/'assets/collision/wall_collision_ax2_ang64_m.stl'))
     if a.cpu==4:SofaRuntime.importPlugin('MultiThreading')

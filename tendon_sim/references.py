@@ -39,10 +39,13 @@ def load_trajectory(path):
 
 
 class RouteReference:
-    """Hold each external waypoint until the actual tip is within 3mm."""
-    arrival_radius_m = .003
+    """Hold each external waypoint until the actual tip is within the configured arrival radius."""
+    arrival_radius_m = .005
 
-    def __init__(self, route):
+    def __init__(self, route, arrival_radius_m=None):
+        self.arrival_radius_m=float(type(self).arrival_radius_m if arrival_radius_m is None else arrival_radius_m)
+        if not np.isfinite(self.arrival_radius_m) or self.arrival_radius_m<=0:
+            raise ValueError('Arrival radius must be finite and positive')
         self.route = np.array(route, dtype=float, copy=True)
         if self.route.ndim != 2 or self.route.shape[1] != 3 or len(self.route) < 2 or not np.isfinite(self.route).all():
             raise ValueError('Finite Nx3 route with at least two points required')

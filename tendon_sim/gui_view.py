@@ -174,7 +174,7 @@ class SofaWindow:
             (trial.output/'gui_visual_verification.json').write_text(json.dumps(dict(verified=True,samples=self.visual_checks,max_center_error_m=self.max_visual_error_m,backend='SOFA wall renderer + immediate pose-derived meshes',scope='Every displayed robot mesh rebuilt from current physical poses; display refresh does not step physics'),indent=2))
         error=np.linalg.norm(poses[-1,:3]-self.last_goal)*1000
         reason=trial.summary['reason'] if trial.done else ('PAUSED' if self.paused else 'RUNNING')
-        self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival 3 mm | feed %.1f mm | left drag: rotate / right drag: pan / wheel: zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.h['feed_m']*1000))
+        self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival %g mm | feed %.1f mm | left drag: rotate / right drag: pan / wheel: zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.reference.arrival_radius_m*1000,self.h['feed_m']*1000))
         self.viewport.update();self.app.processEvents()
         if now-self.last_capture>=2.:
             latest=trial.output/'gui_latest.png';temporary=trial.output/'gui_latest.tmp.png'

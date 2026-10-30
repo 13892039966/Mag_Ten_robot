@@ -16,7 +16,7 @@ class RouteReferenceTests(unittest.TestCase):
         self.assertEqual(ref.current_index, 0)
 
     def test_3mm_boundary_and_one_point_per_observation(self):
-        ref = RouteReference([[0, 0, 0], [.001, 0, 0], [.002, 0, 0]])
+        ref = RouteReference([[0, 0, 0], [.001, 0, 0], [.002, 0, 0]], arrival_radius_m=.003)
         self.assertFalse(ref.observe([0, .003001, 0]))
         self.assertTrue(ref.observe([0, .003, 0]))
         self.assertEqual(ref.completed_count, 1)
@@ -75,4 +75,14 @@ class RouteReferenceTests(unittest.TestCase):
         expected = np.column_stack([np.interp(data['s_m'], arc, original[:, i]) for i in range(3)])
         np.testing.assert_allclose(sampled, expected, atol=1e-14)
         self.assertEqual(len(sampled), 135)
-        self.assertEqual(RouteReference.arrival_radius_m, .003)
+        self.assertEqual(RouteReference.arrival_radius_m, .005)
+
+    def test_configurable_arrival_radius(self):
+        points = [[0, 0, 0], [.01, 0, 0]]
+        strict = RouteReference(points, arrival_radius_m=.003)
+        relaxed = RouteReference(points)
+        self.assertFalse(strict.observe([0, .004, 0]))
+        self.assertTrue(relaxed.observe([0, .005, 0]))
+        for value in [0, -.001, float('inf'), float('nan')]:
+            with self.assertRaises(ValueError):
+                RouteReference(points, arrival_radius_m=value)
