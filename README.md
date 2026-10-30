@@ -135,3 +135,11 @@ profile.json每约2秒更新，包含物理推进、控制回调、DLS、安全�
 不传--gui即完全无头推进，先完成每步记录核验，再由独立进程分析并生成真实管壁GIF。--arrival-radius-mm默认5；复现先前3mm试验可显式传3。绳行程±30mm、张力2N、速度及安全阈值均不变。默认GIF每模拟1秒取一帧、每帧100ms（10倍速）；慢放已有记录可单独调用render.py调整播放速度，不重跑物理。
 
 stalled_at_cable_limit是当前控制器的操作性停止条件（固定点未到达、误差持续缺少改善且绳命令到限），不是物理不可达证明。新记录在summary.detail保存目标、误差、到达半径和停滞窗口说明。历史记录和GIF仍保留原到达半径，不追改为5mm。
+
+## 位置增益6对照（未通过）
+
+`tuning/configs/gain6.json`仅覆盖position_gain_per_s=6，默认仍为4。保持20ms物理步长、10mm轨迹、5mm到达半径、10秒停滞窗口，其余参数不变。两组均完成78/135点，跟踪第79点时触发原停滞条件；增益6未改善路线完成度。完整数值与记录核验摘要见tuning/gain6_comparison.json。
+
+```bash
+./run.sh --dt .02 --cpu 4 --arrival-radius-mm 5 --controller-config tuning/configs/gain6.json --until-terminal --wall-seconds 600 --output outputs/reproduce_gain6
+```
