@@ -51,7 +51,7 @@ class Trial(Sofa.Core.Controller):
         self.peak_stretch=0.;self.peak_force=0.;self.max_move=0.;self.errors=[]
         self.safety=None;self.contact=dict(contact_force_n=0.,contact_rows=0,penetration_m=0.,invalid_reason='')
         self.peak_contact=0.;self.peak_penetration=0.
-        self.progress_history=[]
+        self.error_history=[]
         if h['geometry']:
             if safety_factory is None:
                 from .fast_safety import FastPhantomSafety as ColonSafety
@@ -127,7 +127,11 @@ class Trial(Sofa.Core.Controller):
             goal,phase=self.reference.target(t,p[-1,:3]);error=float(np.linalg.norm(goal-p[-1,:3])*1000)
             row=dict(t=t,phase=phase,error_mm=error,tip_m=p[-1,:3].tolist(),goal_m=goal.tolist(),
                      force_n=forces.tolist(),feed_m=self.h['feed_m'],q_m=self.h['shortening'].tolist(),
-                     controller_us=self.last.get('controller_us'),true_exit_distance_mm=float(np.linalg.norm(p[-1,:3]-self.reference.point(self.reference.maximum_station))*1000) if isinstance(self.reference,RouteReference) else None,progress_m=getattr(self.reference,'progress_m',None),**self.contact)
+                     controller_us=self.last.get('controller_us'),waypoint_index=self.reference.current_index if isinstance(self.reference,RouteReference) else None,waypoint_completed=False,completed_waypoints=getattr(self.reference,'completed_count',None),true_exit_distance_mm=float(np.linalg.norm(p[-1,:3]-self.h['geometry']['exit_position_m'])*1000) if self.h['geometry'] else None,progress_m=getattr(self.reference,'progress_m',None),**self.contact)
+            arrived=False
+            if isinstance(self.reference,RouteReference) and not self.zero:
+                arrived=self.reference.observe(p[-1,:3])
+                row.update(waypoint_completed=arrived,completed_waypoints=self.reference.completed_count,progress_m=self.reference.progress_m)
             self.errors.append((phase,error));self.trace.write(json.dumps(row)+'\n')
             if self.view:
                 saturated=np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)
@@ -136,15 +140,19 @@ class Trial(Sofa.Core.Controller):
                 self.view.update(p,t,goal,status)
                 Sofa.Simulation.updateVisual(self.h['root'])
             if isinstance(self.reference,RouteReference) and not self.zero:
-                self.progress_history.append((t,self.reference.progress_m))
-                self.progress_history=[x for x in self.progress_history if x[0]>=t-5.02]
-                if (t>6. and self.progress_history[-1][0]-self.progress_history[0][0]>=5.
-                    and self.reference.progress_m-self.progress_history[0][1]<.001 and error>5.
-                    and np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)):
-                    self.finish('stalled_at_cable_limit');return
+                if arrived:
+                    self.error_history=[]
+                else:
+                    self.error_history.append((t,error))
+                    self.error_history=[x for x in self.error_history if x[0]>=t-5.02]
+                    if (t>6. and self.error_history[-1][0]-self.error_history[0][0]>=5.
+                        and self.error_history[0][1]-min(x[1] for x in self.error_history)<1. and error>5.
+                        and np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)):
+                        self.finish('stalled_at_cable_limit');return
         if self.ticks%self.status_interval==0:self.update_status()
         if isinstance(self.reference,RouteReference) and not self.zero and self.reference.reached(p[-1,:3]):
-            self.finish('station_reached')
+            at_exit=self.h['geometry'] is not None and np.linalg.norm(p[-1,:3]-self.h['geometry']['exit_position_m'])<=.005
+            self.finish('station_reached' if at_exit else 'trajectory_completed')
         elif self.duration is not None and t>=self.duration-1e-9:self.finish('zero_input_completed' if self.zero else 'duration_completed')
     def update_status(self):
         status=dict(steps=self.ticks,simulated_s=self.ticks*self.h['config'].dt,wall_s=time.monotonic()-self.started,
@@ -154,7 +162,7 @@ class Trial(Sofa.Core.Controller):
     def finish(self,reason,detail=None):
         if self.done:return
         self.done=True;self.h['root'].animate.value=False
-        self.recorder.close(complete=reason in ['duration_completed','station_reached','zero_input_completed'],reason=reason)
+        self.recorder.close(complete=reason in ['duration_completed','station_reached','trajectory_completed','zero_input_completed'],reason=reason)
         self.trace.close()
         phases={}
         for phase in sorted(set(p for p,e in self.errors)):
@@ -165,6 +173,7 @@ class Trial(Sofa.Core.Controller):
             peak_contact_force_n=self.peak_contact,peak_wall_penetration_m=self.peak_penetration,
             progress_m=getattr(self.reference,'progress_m',None),recorded_frames=self.recorder.manifest['total_frames'],
             station_target_m=getattr(self.reference,'maximum_station',None),
+            trajectory_completed=getattr(self.reference,'complete',False),completed_waypoints=getattr(self.reference,'completed_count',None),
             station_reached=reason=='station_reached',
             initial_state_sha256=self.recorder.manifest['initial_state_sha256'],
             scope='Physical simulation result, not calibrated hardware accuracy or full-route success.')

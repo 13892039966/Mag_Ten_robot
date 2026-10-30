@@ -30,40 +30,53 @@ class FarReference:
         return np.vstack([self.origin]+[self.origin+s[2] for s in self.stages]+[circle])
 
 
+def load_trajectory(path):
+    """Read original ordered world-coordinate CSV points in metres, without resampling."""
+    data = np.genfromtxt(path, delimiter=',', names=True, encoding='utf-8')
+    if not data.dtype.names or not {'x_m', 'y_m', 'z_m'} <= set(data.dtype.names):
+        raise ValueError('Trajectory CSV requires x_m,y_m,z_m columns in world metres')
+    return np.column_stack([np.atleast_1d(data[k]) for k in ('x_m', 'y_m', 'z_m')])
+
+
 class RouteReference:
-    def __init__(self,route,maximum_station=None,lookahead=.008):
-        self.route=np.asarray(route,float)
-        if self.route.ndim!=2 or self.route.shape[1]!=3 or len(self.route)<2 or not np.isfinite(self.route).all():
-            raise ValueError('Finite Nx3 route required')
-        self.delta=np.diff(self.route,axis=0);self.segment=np.linalg.norm(self.delta,axis=1)
-        if np.any(self.segment<=0):raise ValueError('No duplicate consecutive route points')
-        self.arc=np.r_[0.,np.cumsum(self.segment)];self.length_m=float(self.arc[-1])
-        self.maximum_station=self.length_m if maximum_station is None else min(float(maximum_station),self.length_m)
-        if not 0<self.maximum_station<=self.length_m or lookahead<=0:raise ValueError('Invalid route range')
-        self.lookahead=lookahead;self.progress_m=0.;self.duration_s=300.
+    """Hold each external waypoint until the actual tip is within 5mm."""
+    arrival_radius_m = .005
 
-    def point(self,s):
-        return np.array([np.interp(s,self.arc,self.route[:,j]) for j in range(3)])
+    def __init__(self, route):
+        self.route = np.array(route, dtype=float, copy=True)
+        if self.route.ndim != 2 or self.route.shape[1] != 3 or len(self.route) < 2 or not np.isfinite(self.route).all():
+            raise ValueError('Finite Nx3 route with at least two points required')
+        self.segment = np.linalg.norm(np.diff(self.route, axis=0), axis=1)
+        self.arc = np.r_[0., np.cumsum(self.segment)]
+        self.length_m = float(self.arc[-1])
+        self.maximum_station = self.length_m
+        self.current_index = 0
+        self.completed_count = 0
+        self.progress_m = 0.
+        self.duration_s = 300.
 
-    def seed_from_tip(self,tip):
-        delta=np.asarray(tip,float)-self.route[:-1]
-        u=np.clip(np.sum(delta*self.delta,axis=1)/self.segment**2,0.,1.)
-        k=int(np.argmin(np.linalg.norm(self.route[:-1]+u[:,None]*self.delta-np.asarray(tip,float),axis=1)))
-        self.progress_m=min(self.maximum_station,float(self.arc[k]+u[k]*self.segment[k]))
+    @property
+    def complete(self):
+        return self.completed_count == len(self.route)
 
-    def target(self,t,tip):
-        q=np.asarray(tip,float)
-        candidates=np.flatnonzero((self.arc[:-1]<=self.progress_m+.060)&(self.arc[1:]>=max(0.,self.progress_m-.010)))
-        a=self.route[candidates];d=self.delta[candidates]
-        u=np.clip(np.sum((q-a)*d,axis=1)/self.segment[candidates]**2,0.,1.)
-        k=int(np.argmin(np.linalg.norm(a+u[:,None]*d-q,axis=1)))
-        station=self.arc[candidates[k]]+u[k]*self.segment[candidates[k]]
-        self.progress_m=min(self.maximum_station,max(self.progress_m,float(station)))
-        goal=self.point(min(self.maximum_station,self.progress_m+self.lookahead))
-        return goal,'colon_route'
+    def target(self, t, tip=None):
+        return self.route[self.current_index].copy(), 'colon_route'
 
-    def reached(self,tip):
-        return self.progress_m>=self.maximum_station-.005 and np.linalg.norm(tip-self.point(self.maximum_station))<=.005
+    def observe(self, tip):
+        """Called once per completed control period; advance at most one point."""
+        tip = np.asarray(tip, dtype=float)
+        if tip.shape != (3,) or not np.isfinite(tip).all():
+            raise ValueError('Finite tip xyz required')
+        if self.complete or np.linalg.norm(tip - self.route[self.current_index]) > self.arrival_radius_m:
+            return False
+        self.progress_m = float(self.arc[self.current_index])
+        self.completed_count += 1
+        if not self.complete:
+            self.current_index += 1
+        return True
+
+    def reached(self, tip):
+        return self.complete and np.linalg.norm(np.asarray(tip) - self.route[-1]) <= self.arrival_radius_m
 
     def preview(self):
-        return np.array([self.point(s) for s in np.linspace(0.,self.maximum_station,max(2,int(self.maximum_station/.005)+1))])
+        return self.route.copy()

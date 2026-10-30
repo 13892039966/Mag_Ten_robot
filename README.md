@@ -9,7 +9,7 @@
 | `tendon_sim/closed_loop.py` | `DLSConfig` 控制参数、`BoundedDLS.command()` 有界 DLS、`slew_targets()` 每物理步速度限幅 |
 | `tendon_sim/cc_predictor.py` | `CCFourTendon` 常曲率预测、末端位置与雅可比 |
 | `tendon_sim/live_scene.py` | `Trial` 组织20ms反馈、动作下发、安全检查和停止条件 |
-| `tendon_sim/references.py` | 路线目标、前视与出口判断 |
+| `tendon_sim/references.py` | 外部轨迹读取、逐点到达与完成判断 |
 | `tendon_sim/body_geometry.py` | 当前完整镜身 `BodyConfig` 参数与113节点布局 |
 | `tendon_sim/physics.py` | 梁、四绳、导向、碰撞球和 SOFA 求解器 |
 | `tendon_sim/libigl_wall.py` | 管壁查询与原生适配库加载 |
@@ -76,20 +76,22 @@ python render.py outputs/dt20_terminal --sample-seconds 1 --frame-ms 100
 
 原始 `BUNDLE_SHA256.json` 保留作迁移基线。当前改动的原包文件为 `run.py`、`tendon_sim/live_scene.py` 和 `tendon_sim/references.py`；`verify_bundle.py` 会报告原包差异。物理、安全、原生碰撞、资产和依赖锁未改，详见 `tuning/physical_baseline_verification.json`。
 
-## 控制策略与历史调参
+## 外部轨迹逐点跟踪
 
-当前全程使用同一套有界DLS控制与中心线前瞻目标。可配置项只有lookahead、position_gain_per_s、velocity_damping、damping_mm_s、smoothing_mm_s、feed_speed_scale、cable_speed_scale。尚未实现逐点到达后再切换目标。
+默认读取已有的 `assets/original/centerline_world_m.csv`（1340点，世界坐标、单位米），也可用 `--trajectory /绝对路径/trajectory.csv` 指定外部轨迹。CSV必须有 `x_m,y_m,z_m` 列；原文件的其他列可保留。至少两个有限三维点，严格按文件顺序执行，不插值、不重采样、不生成新点。
 
-2026-10-30已删除所有接近出口才启用的控制参数、分支、配置、未验证原型及重复源码副本。真实出口5mm到达判定、物理限制和安全检查保留。旧版本源码可从Git历史查看。
-
-此前12组入口初态试验全部未通过。仅改前瞻距离15/25/40mm即可到出口附近，最近真实出口距离分别12.3519/12.3527/12.3483mm；末段补偿的最好保存观测11.9733mm也未通过，且旧试验超时退出的末帧核验失败。这些历史结果不能代表当前删除后的新运行验证。
-
-无末段特殊控制的25mm前瞻候选可按以下命令运行，输出目录必须不存在：
+从第一个点开始固定追踪。每20ms根据最新状态重新计算雅可比和DLS动作；物理更新后，末端中心到当前点的真实三维距离不超过5mm即确认到达，最多切换一个点。未到达不换点，不按时间或最近投影跳点。密集点可能连续几个周期依次完成。停滞检查当前点误差是否改善，并在切换时重置；原物理和安全限制继续生效。
 
 ```bash
 ./run.sh --dt .02 --cpu 4 --until-terminal \
-  --controller-config tuning/configs/lookahead25.json \
-  --output outputs/reproduce_lookahead25
+  --trajectory assets/original/centerline_world_m.csv \
+  --output outputs/waypoints_20ms
 ```
 
-详细删除范围与历史记录说明见[tuning/CONTROL_CHANGES.md](tuning/CONTROL_CHANGES.md)。
+不再支持lookahead或任何末段特殊参数。全程DLS参数和速度比例仍可通过controller-config配置。此前的移动前瞻JSON配置已删除；历史试验记录和旧版本保留在Git历史与tuning记录中，不能作为当前逐点控制的运行成绩。
+
+输出保存原始trajectory.csv及其SHA、点数、单位和5mm判据。trace记录内部点编号、当前目标、误差和到达事件，供核验顺序；回放只显示目标和误差、5mm到达阈值，不显示点编号。
+
+所有外部点完成后标记trajectory_completed；只有同时处于真实结肠出口5mm内，才标记station_reached。自定义轨迹结束不等于通过整段结肠。默认物理步长仍5ms，控制周期固定20ms。
+
+详细改动与历史说明见[tuning/CONTROL_CHANGES.md](tuning/CONTROL_CHANGES.md)。

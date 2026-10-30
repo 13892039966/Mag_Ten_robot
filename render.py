@@ -24,6 +24,11 @@ def main():
     if reader.metadata.get('mode')!='colon':raise ValueError('Colon recording required')
     source_hash=sha(run/'physical_recording/manifest.json')
     geometry,recorded_route=load_recorded_geometry(reader.metadata);mesh_path=Path(geometry['mesh_path']);tri=read_stl(mesh_path)*1000
+    if reader.metadata.get('trajectory'):
+        from tendon_sim.references import load_trajectory
+        trajectory_path=run/'trajectory.csv'
+        assert sha(trajectory_path)==reader.metadata['trajectory']['sha256']
+        recorded_route=load_trajectory(trajectory_path)
     route=recorded_route*1000;entry=geometry['entry_position_m']*1000
     first=reader.frame(0);boundary=reader.metadata['layout']['active_index']
     rows=[json.loads(x) for x in (run/'trace.jsonl').read_text().splitlines()]
@@ -76,9 +81,12 @@ def main():
     diagnostics=run/'route_diagnostics.csv'
     if phantom and diagnostics.exists():
         metrics=np.atleast_1d(np.genfromtxt(diagnostics,delimiter=',',names=True))
-        error_ax.lines[0].set_label('Distance to lookahead goal')
+        error_ax.lines[0].set_label('Distance to current target')
         error_ax.plot(metrics['t'],metrics['centerline_distance_mm'],color='#278260',lw=1.3,label='Distance to centreline')
         error_ax.set_ylabel('Distance (mm)');error_ax.legend(loc='upper left',fontsize=8)
+    if reader.metadata.get('trajectory',{}).get('mode')=='ordered_waypoints':
+        error_ax.axhline(5.,color='#888888',ls='--',lw=.8,label='Arrival radius: 5 mm')
+        error_ax.legend(loc='upper left',fontsize=8)
     error_ax.grid(alpha=.2)
     dynamics=[]
     for ax in panels:
