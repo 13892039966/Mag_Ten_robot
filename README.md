@@ -143,3 +143,11 @@ stalled_at_cable_limit是当前控制器的操作性停止条件（固定点未�
 ```bash
 ./run.sh --dt .02 --cpu 4 --arrival-radius-mm 5 --controller-config tuning/configs/gain6.json --until-terminal --wall-seconds 600 --output outputs/reproduce_gain6
 ```
+
+## 位置增益10对照（未通过）
+
+`tuning/configs/gain10.json`仅覆盖position_gain_per_s=10，默认仍为4。其余条件与增益4、6一致：20ms物理步长、10mm轨迹、5mm到达半径、10秒停滞窗口。三组均完成78/135点；第79点最小误差分别为7.299、7.124、7.236mm。增益10在427.74秒模拟时间触发绳行程饱和停滞规则，现实运行303.87秒；记录和目标切换核验通过，真实管壁GIF自动生成。该停止规则不证明物理不可达。完整对照见tuning/gain10_comparison.json。
+
+```bash
+./run.sh --dt .02 --cpu 4 --arrival-radius-mm 5 --controller-config tuning/configs/gain10.json --until-terminal --wall-seconds 600 --output outputs/reproduce_gain10
+```

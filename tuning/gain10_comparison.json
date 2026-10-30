@@ -1,0 +1,102 @@
+{
+  "results": [
+    {
+      "run": "headless_dt20_r5_stall10_profile_20261030",
+      "config": {
+        "control_period_s": 0.02,
+        "position_gain_per_s": 4.0,
+        "velocity_damping": 0.2,
+        "damping_mm_s": 0.05,
+        "smoothing_mm_s": 0.08
+      },
+      "controller_overrides": {},
+      "simulated_s": 458.96000000000004,
+      "wall_s": 331.1951743909158,
+      "animate_wall_s": 330.8236591669265,
+      "seconds_real_per_sim": 0.7208115286014609,
+      "reason": "stalled_at_cable_limit",
+      "completed_waypoints": 78,
+      "confirmed_station_mm": 768.9954283279644,
+      "point79_min_error_mm": 7.298978939119551,
+      "final_error_mm": 11.348215378295802,
+      "peak_force_n": 2.0,
+      "maximum_stretch": 0.06258400780461915,
+      "recorded_frames": 22949,
+      "recording_verified": true,
+      "waypoint_trace_verified": true,
+      "postprocess_completed": true,
+      "contract_sha256": "f4849551cbb97dd6ad9f9975530d24ff9c3f27f60fbd2165f5769c8ca6972e32"
+    },
+    {
+      "run": "headless_dt20_r5_stall10_gain6_profile_20261030",
+      "config": {
+        "control_period_s": 0.02,
+        "position_gain_per_s": 6.0,
+        "velocity_damping": 0.2,
+        "damping_mm_s": 0.05,
+        "smoothing_mm_s": 0.08
+      },
+      "controller_overrides": {
+        "position_gain_per_s": 6.0
+      },
+      "simulated_s": 439.28000000000003,
+      "wall_s": 313.5704376960639,
+      "animate_wall_s": 313.1976316962391,
+      "seconds_real_per_sim": 0.7129794930254942,
+      "reason": "stalled_at_cable_limit",
+      "completed_waypoints": 78,
+      "confirmed_station_mm": 768.9954283279644,
+      "point79_min_error_mm": 7.123892744938686,
+      "final_error_mm": 10.06595810039193,
+      "peak_force_n": 2.0,
+      "maximum_stretch": 0.06289017987474521,
+      "recorded_frames": 21965,
+      "recording_verified": true,
+      "waypoint_trace_verified": true,
+      "postprocess_completed": true,
+      "contract_sha256": "97e4e17d544b15f578ad7ab5c87f52a07538480fbb32d3f93585f954d81c6a94"
+    },
+    {
+      "run": "headless_dt20_r5_stall10_gain10_profile_20261030",
+      "config": {
+        "control_period_s": 0.02,
+        "position_gain_per_s": 10.0,
+        "velocity_damping": 0.2,
+        "damping_mm_s": 0.05,
+        "smoothing_mm_s": 0.08
+      },
+      "controller_overrides": {
+        "position_gain_per_s": 10.0
+      },
+      "simulated_s": 427.74,
+      "wall_s": 303.86995216598734,
+      "animate_wall_s": 303.49743648874573,
+      "seconds_real_per_sim": 0.7095371872837372,
+      "reason": "stalled_at_cable_limit",
+      "completed_waypoints": 78,
+      "confirmed_station_mm": 768.9954283279644,
+      "point79_min_error_mm": 7.236285277282695,
+      "final_error_mm": 11.120735168822065,
+      "peak_force_n": 2.0,
+      "maximum_stretch": 0.06250954278764964,
+      "recorded_frames": 21388,
+      "recording_verified": true,
+      "waypoint_trace_verified": true,
+      "postprocess_completed": true,
+      "contract_sha256": "db1349de2e3cf8e22c2e272c7615acab860907c0f2b07c08d1fa9ee83dfb4ca3"
+    }
+  ],
+  "common": {
+    "dt_s": 0.02,
+    "control_period_s": 0.02,
+    "cpu": 4,
+    "arrival_radius_mm": 5,
+    "stagnation_window_s": 10,
+    "trajectory_points": 135,
+    "trajectory_sha256": "feb98258e1dbe9defa284e8a5add5dccb86f56d4226954770ab734ca81580272",
+    "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+    "gui": false
+  },
+  "conclusion": "Gains 4, 6 and 10 all completed 78/135 points and stopped while tracking point 79. Neither gain 6 nor gain 10 improves route completion; default remains 4. Operational stagnation is not proof of physical infeasibility.",
+  "scope": "Same entry initial state and physical model; only position_gain_per_s override differs. Raw records and GIFs stay under ignored outputs directories."
+}
