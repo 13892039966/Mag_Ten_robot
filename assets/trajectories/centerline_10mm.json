@@ -1,0 +1,13 @@
+{
+  "source": "assets/original/centerline_world_m.csv",
+  "source_sha256": "d7eb68fd5b32a617f12da7423413b09429c8e8593bf0190c98385adbe69d3c96",
+  "output_sha256": "feb98258e1dbe9defa284e8a5add5dccb86f56d4226954770ab734ca81580272",
+  "source_points": 1340,
+  "sampled_points": 135,
+  "spacing_mm": 10.0,
+  "source_arc_length_m": 1.3388750749768874,
+  "final_interval_mm": 8.875074976887332,
+  "method": "Linear interpolation along original polyline arc; preserve exact endpoints; final interval may be shorter",
+  "unit": "m",
+  "coordinate_frame": "world"
+}

@@ -37,7 +37,7 @@ def main():
             assert row['waypoint_index']==index
             np.testing.assert_array_equal(row['goal_m'],targets[index])
             distance=float(np.linalg.norm(np.array(row['tip_m'])-targets[index]))
-            expected=completed<len(targets) and distance<=.005 and not reader.metadata.get('zero_inputs',False)
+            expected=completed<len(targets) and distance<=trajectory['arrival_radius_m'] and not reader.metadata.get('zero_inputs',False)
             assert row['waypoint_completed']==expected
             completed+=int(expected)
             assert row['completed_waypoints']==completed

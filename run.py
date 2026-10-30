@@ -18,7 +18,7 @@ def main():
     parser.add_argument('--no-gif',action='store_true',help='Skip automatic route analysis and wall GIF')
     parser.add_argument('--gif-sample-seconds',type=float,default=1.,help='Simulation seconds between GIF frames (default: 1)')
     parser.add_argument('--gif-frame-ms',type=int,default=100,help='GIF frame duration in milliseconds (default: 100)')
-    parser.add_argument('--trajectory',type=Path,default=Path(__file__).resolve().parent/'assets/original/centerline_world_m.csv',help='Ordered CSV x_m,y_m,z_m in world metres; no resampling')
+    parser.add_argument('--trajectory',type=Path,default=Path(__file__).resolve().parent/'assets/trajectories/centerline_10mm.csv',help='Ordered CSV x_m,y_m,z_m in world metres; no resampling')
     parser.add_argument('--controller-config',type=Path,help='JSON control parameters; physical limits unchanged')
     parser.add_argument('--wall-seconds',type=float,default=None,help='Optional experiment wall-time limit')
     a=parser.parse_args()
@@ -51,7 +51,7 @@ def main():
     trajectory_path=a.trajectory.resolve()
     trajectory_bytes=trajectory_path.read_bytes()
     reference=RouteReference(load_trajectory(trajectory_path))
-    trajectory=dict(path=str(trajectory_path),sha256=hashlib.sha256(trajectory_bytes).hexdigest(),points=len(reference.route),unit='m',coordinate_frame='world',arrival_radius_m=.005,mode='ordered_waypoints')
+    trajectory=dict(path=str(trajectory_path),sha256=hashlib.sha256(trajectory_bytes).hexdigest(),points=len(reference.route),unit='m',coordinate_frame='world',arrival_radius_m=reference.arrival_radius_m,mode='ordered_waypoints')
     g=dict(g,mesh_path=str(Path(__file__).resolve().parent/'assets/collision/wall_collision_ax2_ang64_m.stl'))
     if a.cpu==4:SofaRuntime.importPlugin('MultiThreading')
     seed_scheduler(a.cpu);root=Sofa.Core.Node('PortableLibiglFullBody');trial=None;stopped=[]

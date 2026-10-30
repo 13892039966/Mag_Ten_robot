@@ -39,8 +39,8 @@ def load_trajectory(path):
 
 
 class RouteReference:
-    """Hold each external waypoint until the actual tip is within 5mm."""
-    arrival_radius_m = .005
+    """Hold each external waypoint until the actual tip is within 3mm."""
+    arrival_radius_m = .003
 
     def __init__(self, route):
         self.route = np.array(route, dtype=float, copy=True)

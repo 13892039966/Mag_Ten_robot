@@ -85,7 +85,8 @@ def main():
         error_ax.plot(metrics['t'],metrics['centerline_distance_mm'],color='#278260',lw=1.3,label='Distance to centreline')
         error_ax.set_ylabel('Distance (mm)');error_ax.legend(loc='upper left',fontsize=8)
     if reader.metadata.get('trajectory',{}).get('mode')=='ordered_waypoints':
-        error_ax.axhline(5.,color='#888888',ls='--',lw=.8,label='Arrival radius: 5 mm')
+        radius_mm=reader.metadata['trajectory']['arrival_radius_m']*1000
+        error_ax.axhline(radius_mm,color='#888888',ls='--',lw=.8,label='Arrival radius: %g mm'%radius_mm)
         error_ax.legend(loc='upper left',fontsize=8)
     error_ax.grid(alpha=.2)
     dynamics=[]

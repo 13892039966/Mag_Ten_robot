@@ -78,20 +78,28 @@ python render.py outputs/dt20_terminal --sample-seconds 1 --frame-ms 100
 
 ## 外部轨迹逐点跟踪
 
-默认读取已有的 `assets/original/centerline_world_m.csv`（1340点，世界坐标、单位米），也可用 `--trajectory /绝对路径/trajectory.csv` 指定外部轨迹。CSV必须有 `x_m,y_m,z_m` 列；原文件的其他列可保留。至少两个有限三维点，严格按文件顺序执行，不插值、不重采样、不生成新点。
+默认读取离线采样的 `assets/trajectories/centerline_10mm.csv`（135点，世界坐标、单位米，沿原中心线弧长每10mm采样，保留起终点，最后一段约8.875mm），也可用 `--trajectory /绝对路径/trajectory.csv` 指定外部轨迹。CSV必须有 `x_m,y_m,z_m` 列；原文件的其他列可保留。至少两个有限三维点，严格按文件顺序执行，不插值、不重采样、不生成新点。
 
-从第一个点开始固定追踪。每20ms根据最新状态重新计算雅可比和DLS动作；物理更新后，末端中心到当前点的真实三维距离不超过5mm即确认到达，最多切换一个点。未到达不换点，不按时间或最近投影跳点。密集点可能连续几个周期依次完成。停滞检查当前点误差是否改善，并在切换时重置；原物理和安全限制继续生效。
+从第一个点开始固定追踪。每20ms根据最新状态重新计算雅可比和DLS动作；物理更新后，末端中心到当前点的真实三维距离不超过3mm即确认到达，最多切换一个点。未到达不换点，不按时间或最近投影跳点。密集点可能连续几个周期依次完成。停滞检查当前点误差是否改善，并在切换时重置；原物理和安全限制继续生效。
 
 ```bash
 ./run.sh --dt .02 --cpu 4 --until-terminal \
-  --trajectory assets/original/centerline_world_m.csv \
+  --trajectory assets/trajectories/centerline_10mm.csv \
   --output outputs/waypoints_20ms
 ```
 
 不再支持lookahead或任何末段特殊参数。全程DLS参数和速度比例仍可通过controller-config配置。此前的移动前瞻JSON配置已删除；历史试验记录和旧版本保留在Git历史与tuning记录中，不能作为当前逐点控制的运行成绩。
 
-输出保存原始trajectory.csv及其SHA、点数、单位和5mm判据。trace记录内部点编号、当前目标、误差和到达事件，供核验顺序；回放只显示目标和误差、5mm到达阈值，不显示点编号。
+输出保存原始trajectory.csv及其SHA、点数、单位和3mm判据。trace记录内部点编号、当前目标、误差和到达事件，供核验顺序；回放只显示目标和误差、3mm到达阈值，不显示点编号。
 
 所有外部点完成后标记trajectory_completed；只有同时处于真实结肠出口5mm内，才标记station_reached。自定义轨迹结束不等于通过整段结肠。默认物理步长仍5ms，控制周期固定20ms。
 
 详细改动与历史说明见[tuning/CONTROL_CHANGES.md](tuning/CONTROL_CHANGES.md)。
+
+原始1340点轨迹保留。采样只在离线工具中执行，控制器读取文件后不再次采样。复现采样时指定不存在的输出路径：
+
+```bash
+python setup/sample_trajectory.py assets/original/centerline_world_m.csv /新的输出路径/centerline_10mm.csv --spacing-mm 10
+```
+
+采样报告保存源文件和输出SHA、点数及末段长度。10mm是原始折线的弧长间隔，弯道中相邻采样点的三维直线距离可能略小于10mm。
