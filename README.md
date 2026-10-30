@@ -76,30 +76,20 @@ python render.py outputs/dt20_terminal --sample-seconds 1 --frame-ms 100
 
 原始 `BUNDLE_SHA256.json` 保留作迁移基线。当前改动的原包文件为 `run.py`、`tendon_sim/live_scene.py` 和 `tendon_sim/references.py`；`verify_bundle.py` 会报告原包差异。物理、安全、原生碰撞、资产和依赖锁未改，详见 `tuning/physical_baseline_verification.json`。
 
-## 2026-10-29 20ms调参：未通过
+## 控制策略与历史调参
 
-12组从相同入口初态开始的候选试验均未达到真实出口5mm内。前视15/25/40mm可越过原约0.78m停滞区，但多数在出口附近偏离并触发安全停止。
+当前全程使用同一套有界DLS控制与中心线前瞻目标。可配置项只有lookahead、position_gain_per_s、velocity_damping、damping_mm_s、smoothing_mm_s、feed_speed_scale、cable_speed_scale。尚未实现逐点到达后再切换目标。
 
-最接近出口的已保存观测为 `outputs/tune_terminal_z12_la25/`：前视25mm、最后200mm内平滑增加世界Z方向-12mm控制目标补偿。最近出口11.973mm、最终保存帧16.163mm，386.26s后触发1200s现实时间上限。**不是通过，也不是推荐默认参数**。真实出口和5mm验收判据未移动。
+2026-10-30已删除所有接近出口才启用的控制参数、分支、配置、未验证原型及重复源码副本。真实出口5mm到达判定、物理限制和安全检查保留。旧版本源码可从Git历史查看。
 
-这一旧试验还有录制缺口：超时在回调内关闭记录后，SOFA额外推进了一步，原进程最终状态核验失败；原timing和recording_verification缺失，不补造。因此只把SHA/时间网格已验证的386.26s保存前缀用于观察和回放。超时退出现已移到物理步之间，专门299帧短回归通过末帧/内存一致性检查，旧试验不追认修复。
+此前12组入口初态试验全部未通过。仅改前瞻距离15/25/40mm即可到出口附近，最近真实出口距离分别12.3519/12.3527/12.3483mm；末段补偿的最好保存观测11.9733mm也未通过，且旧试验超时退出的末帧核验失败。这些历史结果不能代表当前删除后的新运行验证。
 
-结论、对照表和审计在 `outputs/tuning_20261029/`；回放在 `outputs/tune_terminal_z12_la25/wholebody_with_colon.gif`。GIF为原686080面真实管壁、10倍速；显示的goal error是补偿控制目标误差，不能替代真实出口距离。
-
-调参需显式传入JSON，默认步长仍5ms，默认控制不采用上述失败配置。例如，仅供复现该未通过候选，使用修复后的退出路径：
+无末段特殊控制的25mm前瞻候选可按以下命令运行，输出目录必须不存在：
 
 ```bash
-./run.sh --dt .02 --cpu 4 --until-terminal --wall-seconds 1200 \
-  --controller-config tuning/configs/terminal_z12_la25.json \
-  --output outputs/reproduce_closest_20ms
+./run.sh --dt .02 --cpu 4 --until-terminal \
+  --controller-config tuning/configs/lookahead25.json \
+  --output outputs/reproduce_lookahead25
 ```
 
-`--wall-seconds` 是现实时间上限。候选筛选可用 `--no-gif` 跳过后处理，普通运行仍默认自动生成GIF。运行参数、源码哈希保存在run_contract和录制metadata。当前10项测试、默认1秒参考对照均通过。
-
-代码：`run.py` 解析参数和管理超时，`live_scene.py` 注入DLS配置、速度比例、可选末段预紧/增益/控制敏感度，`references.py` 可补偿控制目标；`closed_loop.py` 的DLS求解算法保持原样。配置文件有准备但未运行的候选，完整实测清单以 `tuning/experiment_table.csv` 为准。
-
-`tuning/audit_limits.py RUN` 核对每个保存步的命令限值、原始初态和未偏移的出口；它不替代原进程的最后内存状态核验。`tuning/summarize.py` 汇总候选，`run_batch.py` 带本次固定9小时墙钟截止时间，已过期，不能直接用于新一轮任务。
-
-检查点重建首步偏差17.8mm且出现虚假接触突变，方法已作废；数据移至 `outputs/rejected_checkpoint_probes/`，不能用于选优或整段验收。未启用的方向补偿原型归档在 `tuning/unvalidated_prototypes/heading_revision/`，没有被验证或计入成绩。当前代码快照在 `tuning/final_source/`；旧最佳候选实际录制模块快照在 `outputs/tuning_20261029/best_observed/recorded_runtime_sources/`。
-
-时间：9小时窗口为上海时间2026-10-29 21:14至2026-10-30 06:14；实际候选计算集中在10月29日21:15至23:35，累计仿真耗时约2小时16分。之后存在未执行试验的间隔，续接时已超过窗口，未再启动调参搜索；仅完成核验、回放和超时退出缺陷的短回归。本记录不宣称持续执行了9小时。
+详细删除范围与历史记录说明见[tuning/CONTROL_CHANGES.md](tuning/CONTROL_CHANGES.md)。

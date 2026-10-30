@@ -1,7 +1,7 @@
 """Actual SOFA physics with every-step full-body recording and observable progress."""
 import os,sys,json,time,datetime,uuid,atexit,hashlib
 from pathlib import Path
-from dataclasses import asdict,replace
+from dataclasses import asdict
 import numpy as np
 from scipy.spatial.transform import Rotation
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,7 +10,6 @@ from .body_geometry import BodyConfig
 from .references import FarReference,RouteReference
 from .physical_recording import ChunkRecorder
 from .closed_loop import BoundedDLS,DLSConfig,slew_targets
-from .cc_predictor import CCFourTendon
 from .logging_output import AsyncKeyboardOutput
 from .actuator_gauge import differential_lengths,differential_jacobian
 from .run_limits import checked_limit,reached_limit,control_stride
@@ -21,7 +20,6 @@ class WorldModel:
     """Local active CC sensitivity; feed direction is an approximation under contact."""
     def __init__(self,original,h):
         self.original,self.h,self.config=original,h,original.config
-        self.distal_length_m=None;self.local_models={};self.last_effective_length_m=self.config.active_length_m
     def jacobian(self,q,feed):
         p=np.asarray(self.h['state'].position.value)
         j=self.original.jacobian(q,feed)
@@ -29,18 +27,6 @@ class WorldModel:
         if self.h['geometry']:
             free_index,free_length=released_active_segment(self.h['definition']['abscissa'],index,self.h['feeder'].points.value)
             if free_index>index:index=free_index;scale=free_length/self.config.active_length_m
-        self.last_effective_length_m=self.config.active_length_m*scale
-        if self.distal_length_m is not None:
-            arc=self.h['definition']['abscissa']
-            distal_index=max(index,int(np.searchsorted(arc,arc[-1]-self.distal_length_m,side='left')))
-            distal_index=min(distal_index,len(arc)-2)
-            if distal_index>index:
-                index=distal_index;length=float(arc[-1]-arc[index]);fraction=length/self.config.active_length_m
-                if index not in self.local_models:
-                    local_config=replace(self.config,active_length_m=length,cable_limit_m=min(self.config.cable_limit_m,.49*length))
-                    self.local_models[index]=CCFourTendon(local_config)
-                j=self.local_models[index].jacobian(np.asarray(q)*fraction,feed)
-                j[:,:4]*=fraction;scale=1.;self.last_effective_length_m=length
         r=Rotation.from_quat(p[index,3:]).as_matrix()
         j[:,:4]=scale*(r@j[:,:4])
         j[:,4]=Rotation.from_quat(p[-1,3:]).as_matrix()[:,0]
@@ -57,9 +43,6 @@ class Trial(Sofa.Core.Controller):
         self.policy=BoundedDLS(config=DLSConfig(**dls),robot_config=h['config']);self.policy.model=WorldModel(self.policy.model,h)
         self.policy.speeds[:4]*=self.controller_config.get('cable_speed_scale',1.)
         self.policy.speeds[4]*=self.controller_config.get('feed_speed_scale',1.)
-        self.base_policy_config=self.policy.config
-        self.base_feed_speed=float(self.policy.speeds[4])
-        self.terminal_weight=0.
         self.interval=control_stride(self.policy.config.control_period_s,h['config'].dt)
         self.status_interval=max(1,int(round(1./h['config'].dt)))
         self.ticks=0;self.done=False;self.started=time.monotonic();self.wall_seconds=checked_limit(wall_seconds)
@@ -114,21 +97,12 @@ class Trial(Sofa.Core.Controller):
             p=np.asarray(self.h['state'].position.value);v=np.asarray(self.h['state'].velocity.value)
             if self.ticks%self.interval==0 and not self.zero:
                 goal,_=self.reference.target(self.ticks*self.h['config'].dt,p[-1,:3])
-                remaining=getattr(self.reference,'maximum_station',float('inf'))-getattr(self.reference,'progress_m',0.)
-                w=float(np.clip(1.-remaining/self.controller_config.get('terminal_zone_m',.15),0.,1.))
-                self.terminal_weight=w*w*(3.-2.*w)
-                w=self.terminal_weight;cfg=self.controller_config;base=self.base_policy_config
-                self.policy.config=replace(base,
-                    velocity_damping=(1.-w)*base.velocity_damping+w*cfg['terminal_velocity_damping'] if 'terminal_velocity_damping' in cfg else base.velocity_damping,
-                    position_gain_per_s=(1.-w)*base.position_gain_per_s+w*cfg['terminal_position_gain_per_s'] if 'terminal_position_gain_per_s' in cfg else base.position_gain_per_s)
-                self.policy.model.distal_length_m=(1.-w)*self.h['config'].active_length_m+w*cfg['terminal_jacobian_distal_m'] if 'terminal_jacobian_distal_m' in cfg else None
-                self.policy.speeds[4]=self.base_feed_speed*((1.-w)+w*cfg['terminal_feed_speed_scale']) if 'terminal_feed_speed_scale' in cfg else self.base_feed_speed
                 self.last=self.policy.command(differential_lengths(self.actual_q()),self.h['feed_m'],p[-1,:3],v[-1,:3],goal,self.previous)
                 self.previous=self.last['action']
                 # Slack tendons do not track guide length; integrate the bounded
                 # command instead of resetting it to measured slack geometry.
                 q_next=self.h['shortening']+self.policy.speeds[:4]*self.policy.config.control_period_s*self.previous[:4]
-                self.desired=np.r_[differential_lengths(q_next)+self.terminal_weight*self.controller_config.get('terminal_cable_preload_m',0.),self.last['feed_target_m']]
+                self.desired=np.r_[differential_lengths(q_next),self.last['feed_target_m']]
             q,feed=slew_targets(self.h['shortening'],self.h['feed_m'],self.desired[:4],self.desired[4],self.h['config'])
             submit_targets(self.h,q,feed)
         except Exception as e:self.finish('controller_exception',repr(e))
@@ -153,7 +127,7 @@ class Trial(Sofa.Core.Controller):
             goal,phase=self.reference.target(t,p[-1,:3]);error=float(np.linalg.norm(goal-p[-1,:3])*1000)
             row=dict(t=t,phase=phase,error_mm=error,tip_m=p[-1,:3].tolist(),goal_m=goal.tolist(),
                      force_n=forces.tolist(),feed_m=self.h['feed_m'],q_m=self.h['shortening'].tolist(),
-                     controller_us=self.last.get('controller_us'),terminal_weight=self.terminal_weight,true_exit_distance_mm=float(np.linalg.norm(p[-1,:3]-self.reference.point(self.reference.maximum_station))*1000) if isinstance(self.reference,RouteReference) else None,progress_m=getattr(self.reference,'progress_m',None),**self.contact)
+                     controller_us=self.last.get('controller_us'),true_exit_distance_mm=float(np.linalg.norm(p[-1,:3]-self.reference.point(self.reference.maximum_station))*1000) if isinstance(self.reference,RouteReference) else None,progress_m=getattr(self.reference,'progress_m',None),**self.contact)
             self.errors.append((phase,error));self.trace.write(json.dumps(row)+'\n')
             if self.view:
                 saturated=np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)

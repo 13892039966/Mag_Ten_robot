@@ -22,16 +22,11 @@ def main():
     parser.add_argument('--wall-seconds',type=float,default=None,help='Optional experiment wall-time limit')
     a=parser.parse_args()
     controller_config=json.loads(a.controller_config.read_text()) if a.controller_config else {}
-    allowed={'lookahead','position_gain_per_s','velocity_damping','damping_mm_s','smoothing_mm_s','feed_speed_scale','cable_speed_scale','terminal_goal_offset_m','terminal_zone_m','terminal_velocity_damping','terminal_position_gain_per_s','terminal_feed_speed_scale','terminal_cable_preload_m','terminal_jacobian_distal_m'}
+    allowed={'lookahead','position_gain_per_s','velocity_damping','damping_mm_s','smoothing_mm_s','feed_speed_scale','cable_speed_scale'}
     if not isinstance(controller_config,dict) or set(controller_config)-allowed:parser.error('Unsupported controller config keys')
     import math
-    scalars={k:v for k,v in controller_config.items() if k!='terminal_goal_offset_m'}
-    if any(not isinstance(v,(int,float)) or not math.isfinite(v) or v<=0 for v in scalars.values()):parser.error('Controller parameters must be finite and positive')
-    offset=controller_config.get('terminal_goal_offset_m',[0.,0.,0.])
-    if not isinstance(offset,list) or len(offset)!=3 or any(not isinstance(v,(int,float)) or not math.isfinite(v) for v in offset) or sum(v*v for v in offset)>.02**2:parser.error('Terminal target offset must be three finite metres, norm <=20mm')
-    if any(controller_config.get(k,1)>1 for k in ['feed_speed_scale','cable_speed_scale','terminal_feed_speed_scale']):parser.error('Speed scales cannot exceed original physical speed limits')
-    if 'terminal_jacobian_distal_m' in controller_config and not .01<=controller_config['terminal_jacobian_distal_m']<=.2:parser.error('Distal control-model length must be in [0.01,0.2]m')
-    if controller_config.get('terminal_cable_preload_m',0)>.01:parser.error('Experimental preload is limited to 10mm; original stroke and force limits remain active')
+    if any(not isinstance(v,(int,float)) or not math.isfinite(v) or v<=0 for v in controller_config.values()):parser.error('Controller parameters must be finite and positive')
+    if any(controller_config.get(k,1)>1 for k in ['feed_speed_scale','cable_speed_scale']):parser.error('Speed scales cannot exceed original physical speed limits')
     if a.wall_seconds is not None and (not math.isfinite(a.wall_seconds) or a.wall_seconds<=0):parser.error('Invalid wall limit')
     if not 0<a.gif_sample_seconds<float('inf') or a.gif_frame_ms<10:parser.error('GIF sampling must be finite and positive; frame duration must be >=10ms')
     if a.seconds is None and not a.until_terminal:a.seconds=1.
@@ -52,7 +47,7 @@ def main():
     began=time.perf_counter();g,route=load_phantom();original_mesh=g['mesh_path']
     c=BodyConfig(dt=a.dt,feed_limit_m=1.4)
     d=body_layout(c,entry=g['entry_position_m'],direction=g['entry_direction'],insertion=0.)
-    reference=RouteReference(route,maximum_station=None,lookahead=controller_config.get('lookahead',.008),terminal_goal_offset_m=controller_config.get('terminal_goal_offset_m'),terminal_zone_m=controller_config.get('terminal_zone_m',.15));reference.seed_from_tip(d['poses'][-1,:3])
+    reference=RouteReference(route,maximum_station=None,lookahead=controller_config.get('lookahead',.008));reference.seed_from_tip(d['poses'][-1,:3])
     g=dict(g,mesh_path=str(Path(__file__).resolve().parent/'assets/collision/wall_collision_ax2_ang64_m.stl'))
     if a.cpu==4:SofaRuntime.importPlugin('MultiThreading')
     seed_scheduler(a.cpu);root=Sofa.Core.Node('PortableLibiglFullBody');trial=None;stopped=[]

@@ -31,7 +31,7 @@ class FarReference:
 
 
 class RouteReference:
-    def __init__(self,route,maximum_station=None,lookahead=.008,terminal_goal_offset_m=None,terminal_zone_m=.15):
+    def __init__(self,route,maximum_station=None,lookahead=.008):
         self.route=np.asarray(route,float)
         if self.route.ndim!=2 or self.route.shape[1]!=3 or len(self.route)<2 or not np.isfinite(self.route).all():
             raise ValueError('Finite Nx3 route required')
@@ -41,10 +41,6 @@ class RouteReference:
         self.maximum_station=self.length_m if maximum_station is None else min(float(maximum_station),self.length_m)
         if not 0<self.maximum_station<=self.length_m or lookahead<=0:raise ValueError('Invalid route range')
         self.lookahead=lookahead;self.progress_m=0.;self.duration_s=300.
-        self.terminal_goal_offset_m=np.zeros(3) if terminal_goal_offset_m is None else np.asarray(terminal_goal_offset_m,float)
-        self.terminal_zone_m=float(terminal_zone_m)
-        if self.terminal_goal_offset_m.shape!=(3,) or not np.isfinite(self.terminal_goal_offset_m).all() or np.linalg.norm(self.terminal_goal_offset_m)>.02:raise ValueError('Terminal control target offset must be finite and <=20mm')
-        if not np.isfinite(self.terminal_zone_m) or self.terminal_zone_m<=0:raise ValueError('Invalid terminal zone')
 
     def point(self,s):
         return np.array([np.interp(s,self.arc,self.route[:,j]) for j in range(3)])
@@ -64,11 +60,7 @@ class RouteReference:
         station=self.arc[candidates[k]]+u[k]*self.segment[candidates[k]]
         self.progress_m=min(self.maximum_station,max(self.progress_m,float(station)))
         goal=self.point(min(self.maximum_station,self.progress_m+self.lookahead))
-        # Control waypoint compensation only: point(), route, and reached() retain
-        # the true geometry and unchanged 5mm acceptance criterion.
-        weight=np.clip(1.-(self.maximum_station-self.progress_m)/self.terminal_zone_m,0.,1.)
-        weight=weight*weight*(3.-2.*weight)
-        return goal+weight*self.terminal_goal_offset_m,'colon_route'
+        return goal,'colon_route'
 
     def reached(self,tip):
         return self.progress_m>=self.maximum_station-.005 and np.linalg.norm(tip-self.point(self.maximum_station))<=.005

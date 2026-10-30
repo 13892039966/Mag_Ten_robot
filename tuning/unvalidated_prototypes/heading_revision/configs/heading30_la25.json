@@ -1,7 +1,0 @@
-{
-  "lookahead": 0.025,
-  "terminal_zone_m": 0.25,
-  "terminal_heading_lead_m": 0.03,
-  "terminal_heading_limit_m": 0.025,
-  "terminal_heading_preview_m": 0.04
-}

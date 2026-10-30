@@ -1,9 +1,0 @@
-{
-  "lookahead": 0.025,
-  "terminal_goal_offset_m": [
-    0,
-    0,
-    -0.006
-  ],
-  "terminal_zone_m": 0.2
-}

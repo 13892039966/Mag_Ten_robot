@@ -1,45 +1,15 @@
-# 控制改动与实测配置
+# 控制清理记录
 
-本目录保留失败候选用于复现；没有通过整段结肠的配置，默认控制未被替换。
+2026-10-30按用户要求删除全部接近出口才启用的特殊控制：目标偏置、增益/阻尼渐变、进给速度渐变、共同绳预紧和局部雅可比长度切换。对应参数校验、trace权重字段、JSON配置、测试、未验证原型和重复源码副本一并移除。旧接口现在报不支持的配置键。
 
-## 不使用末段补偿的结果
+保留全程通用DLS参数和速度比例、正常前瞻目标、真实出口5mm到达判定、物理限制、安全检查及超时退出修复。逐点到达切换尚未实现。
 
-所有下列试验均为20ms物理步长、20ms控制周期、4线程、相同入口初态。
+## 历史试验
 
-| 配置 | 相对默认的修改 | 最近真实出口距离 | 停止原因 |
-| --- | --- | --- | --- |
-| lookahead15.json | lookahead: 8→15mm | 12.3519mm | outside_lumen |
-| lookahead25.json | lookahead: 8→25mm | 12.3527mm | outside_lumen |
-| lookahead40.json | lookahead: 8→40mm | 12.3483mm | outside_lumen |
+experiment_table.csv/json和results.jsonl保留实际历史数值，其中包含已经删除的配置名称和参数；它们是记录，不是当前可加载的配置。不存在整段通过的配置。旧源码与已删除配置可从Git历史查看。
 
-三者都推进到出口附近，不能把单调路线游标到达末端视为真实通过。仅按最近出口距离，40mm这一组略小；差异只有约0.004mm，不能据此断定优劣。25mm可作为无末段补偿的后续对照配置，但不是验证通过的推荐配置。
+仅修改前瞻距离15/25/40mm时，最近真实出口距离分别为12.3519/12.3527/12.3483mm，均以outside_lumen停止。三者差异不能证明40mm更优。
 
-包含末段补偿的最近观测为terminal_z12_la25.json：lookahead=25mm、terminal_zone_m=200mm、terminal_goal_offset_m=[0,0,-12mm]。最近11.9733mm，比单改25mm约改善0.3793mm；未达到真实出口5mm门槛。该旧试验超时退出时末帧一致性核验失败，只能评价已保存前缀，不能宣称完整运行核验通过。
+旧末段补偿试验最近11.9733mm，仍未达到5mm，且其超时退出末帧核验失败，只能评价已保存前缀。检查点恢复探测无效，probe_invalidated.json保留原因，相应脚本已删除。
 
-## 新增代码接口
-
-- run.py：controller-config JSON解析、参数范围校验、超时退出修复、自动真实管壁回放。
-- tendon_sim/live_scene.py：配置注入、全程速度比例、可选末段增益/速度/预紧/控制雅可比模型。
-- tendon_sim/references.py：可选末段世界坐标目标偏置。
-- tendon_sim/closed_loop.py：原DLS求解算法保持不变。
-
-terminal_*是本轮新增的可选实验接口；不指定它们不会启用末段补偿。它们没有改变真实出口、成功判据、机器人实际尺寸或安全限制。现有证据没有证明这些补偿能解决通过问题，后续以不含terminal_*的全程参数作为对照。
-
-## 证据与版本
-
-- baseline_source/：调参前控制源码快照，可与当前入口逐文件比较。
-- configs/：包括实测和仅准备的配置；是否实测以experiment_table.csv为准。
-- experiment_table.csv：12组有效入口初态候选和原始基线，全部未通过。
-- unvalidated_prototypes/：未验证原型，不代表当前入口支持或运行过。
-- probe_invalidated.json：检查点恢复误差导致相关探测试验无效，不能参与参数排名。
-- outputs/、本机环境、编译产物、运行日志不纳入Git；依赖锁、资产、许可和原生源码保留。
-
-复现无末段补偿的25mm候选（输出目录必须不存在）：
-
-```bash
-./run.sh --dt .02 --cpu 4 --until-terminal \
-  --controller-config tuning/configs/lookahead25.json \
-  --output outputs/reproduce_lookahead25
-```
-
-该命令不代表保证通过。运行结束仍由原安全、饱和停滞和真实出口条件判断。
+当前configs/只包含全程通用参数配置；是否曾实际测试，仍以experiment_table.csv为准。
