@@ -110,7 +110,7 @@ python setup/sample_trajectory.py assets/original/centerline_world_m.csv /新的
 ./run.sh --gui --dt .02 --cpu 4 --until-terminal --output outputs/gui_dt20_waypoints_terminal
 ```
 
-使用现有SOFA25.06的Sofa.SofaGL渲染和独立环境内的PySide6窗口；本环境没有官方Qt/ImGui GUI插件，未混装其他版本。窗口显示真实原始管壁、实际节点姿态生成的镜身表面和当前目标。显示更新不替代或跳过物理步进。支持拖动旋转、滚轮缩放、结肠/全身视角、暂停及停止保存。关闭窗口按人为中断保存，不算通过。运行中保存gui_latest.png，首末帧为gui_first.png/gui_final.png。
+使用现有SOFA25.06的Sofa.SofaGL渲染和独立环境内的PySide6窗口；本环境没有官方Qt/ImGui GUI插件，未混装其他版本。窗口显示真实原始管壁、实际节点姿态生成的镜身表面和当前目标。显示更新不替代或跳过物理步进。支持按住左键旋转、按住右键平移、滚轮缩放、结肠/全身视角、暂停及停止保存。关闭窗口按人为中断保存，不算通过。运行中保存gui_latest.png，首末帧为gui_first.png/gui_final.png。
 
 GUI可视开销独立于animate计时，总现实耗时仍包含窗口开销。默认结束后执行分析和GIF生成。10mm/3mm是当前默认外部轨迹和到达条件，不是出口特殊控制。
 

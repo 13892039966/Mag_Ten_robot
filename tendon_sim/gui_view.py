@@ -73,11 +73,27 @@ class SofaViewport(QOpenGLWidget):
             g.glEnd()
         g.glPopAttrib()
 
-    def mousePressEvent(self,event):self.last=event.position()
+    def mousePressEvent(self,event):
+        if event.button() in (Qt.LeftButton,Qt.RightButton):
+            self.last=event.position();event.accept()
+
     def mouseMoveEvent(self,event):
-        if self.last is not None:
-            delta=event.position()-self.last;self.yaw+=delta.x()*.4;self.pitch+=delta.y()*.4;self.last=event.position();self.update()
-    def mouseReleaseEvent(self,event):self.last=None
+        if self.last is None:return
+        position=event.position();delta=position-self.last;self.last=position
+        if event.buttons() & Qt.RightButton:
+            # Pan in the screen plane, scaled by camera distance and viewport height.
+            scale=2.*self.distance*.4142/max(1,self.height())
+            rotation=Rotation.from_euler('x',self.pitch,degrees=True).as_matrix() @ Rotation.from_euler('z',self.yaw,degrees=True).as_matrix()
+            self.center+=rotation.T@np.array([-delta.x()*scale,delta.y()*scale,0.])
+        elif event.buttons() & Qt.LeftButton:
+            self.yaw+=delta.x()*.4;self.pitch+=delta.y()*.4
+        else:return
+        self.update();event.accept()
+
+    def mouseReleaseEvent(self,event):
+        self.last=event.position() if event.buttons() & (Qt.LeftButton|Qt.RightButton) else None
+        event.accept()
+
     def wheelEvent(self,event):self.distance=np.clip(self.distance*np.exp(-event.angleDelta().y()/1200),.03,10.);self.update()
 
 
@@ -152,7 +168,7 @@ class SofaWindow:
             (trial.output/'gui_visual_verification.json').write_text(json.dumps(dict(verified=True,samples=self.visual_checks,max_center_error_m=self.max_visual_error_m,backend='SOFA wall renderer + immediate pose-derived meshes',scope='Every displayed robot mesh rebuilt from current physical poses; display refresh does not step physics'),indent=2))
         error=np.linalg.norm(poses[-1,:3]-self.last_goal)*1000
         reason=trial.summary['reason'] if trial.done else ('PAUSED' if self.paused else 'RUNNING')
-        self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival 3 mm | feed %.1f mm | drag to rotate / wheel to zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.h['feed_m']*1000))
+        self.status.setText('%s | simulated %.2f s | dt %.0f ms | target error %.2f mm | arrival 3 mm | feed %.1f mm | left drag: rotate / right drag: pan / wheel: zoom'%(reason,trial.ticks*self.h['config'].dt,self.h['config'].dt*1000,error,self.h['feed_m']*1000))
         self.viewport.update();self.app.processEvents()
         if now-self.last_capture>=2.:
             latest=trial.output/'gui_latest.png';temporary=trial.output/'gui_latest.tmp.png'
