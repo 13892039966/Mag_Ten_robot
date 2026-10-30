@@ -115,3 +115,13 @@ python setup/sample_trajectory.py assets/original/centerline_world_m.csv /新的
 GUI可视开销独立于animate计时，总现实耗时仍包含窗口开销。默认结束后执行分析和GIF生成。10mm/3mm是当前默认外部轨迹和到达条件，不是出口特殊控制。
 
 界面布局：顶部按钮栏、中间自适应三维视口、底部固定26像素状态栏。管壁由SOFA绘制；镜身表面每次显示刷新直接从当前物理节点姿态重建并绘制，避免Ogl缓存或延迟映射导致画面停在旧状态。显示顶点不参与物理求解。
+
+## 分项计时
+
+```bash
+python setup/profile_run.py --gui --dt .02 --cpu 4 --seconds 150 --no-gif --output outputs/profile_20ms
+```
+
+profile.json每约2秒更新，包含物理推进、控制回调、DLS、安全、录制、GUI处理/绘制/抓图以及SOFA内部阶段采样。层级计时包含子项，不应直接相加；disjoint_animate给出不重叠分类。计时从调用正常入口开始，不含分析器预先导入模块的时间。脚本使用同一入口和初态，不从不完整检查点恢复。诊断最小化可加--profile-minimized。
+
+已修复窗口最小化、隐藏或Qt报告未暴露时仍持续请求重绘和抓图的路径；继续处理恢复/停止事件，物理、安全和每步录制照常执行。当前正在运行的旧进程不会自动加载此补丁，下次启动生效。更完整的物理/显示分进程仍是后续优化候选，尚未实现。

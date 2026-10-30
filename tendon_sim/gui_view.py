@@ -148,6 +148,12 @@ class SofaWindow:
 
     def process(self, trial, force=False):
         self.app.processEvents()
+        # Minimized Qt/OpenGL composition can block ~1s per frame on this
+        # desktop. Keep pumping restore/close events, but never enqueue another
+        # repaint or framebuffer readback while no window is visible.
+        handle=self.window.windowHandle()
+        if not force and (self.window.isMinimized() or not self.window.isVisible() or (handle is not None and not handle.isExposed())):
+            return
         now=time.monotonic()
         if not force and now-self.last_render<1/25:return
         self.last_render=now
