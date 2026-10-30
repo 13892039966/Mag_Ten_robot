@@ -144,8 +144,8 @@ class Trial(Sofa.Core.Controller):
                     self.error_history=[]
                 else:
                     self.error_history.append((t,error))
-                    self.error_history=[x for x in self.error_history if x[0]>=t-5.02]
-                    if (t>6. and self.error_history[-1][0]-self.error_history[0][0]>=5.
+                    self.error_history=[x for x in self.error_history if x[0]>=t-10.02]
+                    if (t>10. and self.error_history[-1][0]-self.error_history[0][0]>=10.
                         and self.error_history[0][1]-min(x[1] for x in self.error_history)<1. and error>self.reference.arrival_radius_m*1000.
                         and np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)):
                         self.finish('stalled_at_cable_limit',dict(waypoint_index=self.reference.current_index,goal_m=goal.tolist(),error_mm=error,arrival_radius_mm=self.reference.arrival_radius_m*1000,window_s=self.error_history[-1][0]-self.error_history[0][0],best_improvement_mm=self.error_history[0][1]-min(x[1] for x in self.error_history),interpretation='Current controller stalled with saturated cable commands; not proof that the waypoint is physically unreachable'));return
