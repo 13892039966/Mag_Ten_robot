@@ -13,6 +13,7 @@ def main():
     duration=parser.add_mutually_exclusive_group()
     duration.add_argument('--seconds',type=float)
     duration.add_argument('--until-terminal',action='store_true')
+    parser.add_argument('--gui',action='store_true',help='Real-time SOFA OpenGL scene in a Qt window')
     parser.add_argument('--zero',action='store_true')
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--no-gif',action='store_true',help='Skip automatic route analysis and wall GIF')
@@ -54,7 +55,7 @@ def main():
     trajectory=dict(path=str(trajectory_path),sha256=hashlib.sha256(trajectory_bytes).hexdigest(),points=len(reference.route),unit='m',coordinate_frame='world',arrival_radius_m=reference.arrival_radius_m,mode='ordered_waypoints')
     g=dict(g,mesh_path=str(Path(__file__).resolve().parent/'assets/collision/wall_collision_ax2_ang64_m.stl'))
     if a.cpu==4:SofaRuntime.importPlugin('MultiThreading')
-    seed_scheduler(a.cpu);root=Sofa.Core.Node('PortableLibiglFullBody');trial=None;stopped=[]
+    seed_scheduler(a.cpu);root=Sofa.Core.Node('PortableLibiglFullBody');trial=None;view=None;stopped=[]
     signal.signal(signal.SIGINT,lambda *_:stopped.append('SIGINT'))
     signal.signal(signal.SIGTERM,lambda *_:stopped.append('SIGTERM'))
     try:
@@ -68,6 +69,9 @@ def main():
         trial=Trial(h,a.output,reference,seconds=a.seconds,wall_seconds=None,zero=a.zero,until_terminal=a.until_terminal,
             safety_factory=FastPhantomSafety,controller_config=controller_config,name='Control',listening=True)
         root.addObject(trial)
+        if a.gui:
+            from tendon_sim.gui_view import SofaWindow
+            view=SofaWindow(h,reference,original_mesh)
         asset=dict(kind='user_phantom40_complete_wall',mesh_path=original_mesh,geometry_npz=str(DEFAULT_ROOT/'geometry_world_m.npz'),
             mesh_sha256=sha(original_mesh),geometry_npz_sha256=sha(DEFAULT_ROOT/'geometry_world_m.npz'),flipNormals=False)
         (a.output/'trajectory.csv').write_bytes(trajectory_bytes)
@@ -79,7 +83,7 @@ def main():
         np.testing.assert_allclose(h['state'].position.value,d['poses'],rtol=0,atol=1e-14)
         assert not np.any(h['state'].velocity.value)
         if not trial.recorder.manifest['total_frames']:trial.initialized()
-        contract=dict(trajectory=trajectory,wall_time_limit_s=a.wall_seconds,wall_timeout_handling='checked_between_physics_steps',runner_sha256=sha(__file__),controller_parameters=controller_config,robot=asdict(c),platform=platform.platform(),python=platform.python_version(),cpu_pool_actual=actual_thread_count(),
+        contract=dict(gui=a.gui,visual_backend='Sofa.SofaGL + Qt' if a.gui else None,trajectory=trajectory,wall_time_limit_s=a.wall_seconds,wall_timeout_handling='checked_between_physics_steps',runner_sha256=sha(__file__),controller_parameters=controller_config,robot=asdict(c),platform=platform.platform(),python=platform.python_version(),cpu_pool_actual=actual_thread_count(),
             control_period_s=.02,control_stride=trial.interval,route_length_m=reference.length_m,initial_insertion_m=0.,
             native_rate_factor=0.,backend='libigl2.6.0_single_closest',dll_sha256=sha(DLL),obj_sha256=sha(OBJ),
             raw_sha256=sha(ASSETS/'wall_libigl_4mm_f64.raw'),force_units='maxForce=2N*dt, measured force=impulse/dt',
@@ -87,15 +91,24 @@ def main():
         (a.output/'run_contract.json').write_text(json.dumps(contract,indent=2),encoding='utf-8')
         initial=trial.safety.check(np.asarray(h['collision'].position.value),'',[])
         if initial['invalid_reason']:trial.finish('invalid_initial_state',initial['invalid_reason'])
+        if view:
+            view.show();view.process(trial,force=True);view.screenshot(a.output/'gui_first.png')
         setup=time.perf_counter()-began;elapsed=cpu=0.
         while not trial.done:
+            if view:
+                view.process(trial)
+                if view.closed:trial.finish('user_interrupted','GUI stop or window closed');break
             if stopped:trial.finish('user_interrupted',stopped[-1]);break
             # Stop before entering animate: onAnimateBegin cannot cancel an
             # already-started physics step after closing the recording.
             if a.wall_seconds is not None and time.monotonic()-trial.started>=a.wall_seconds:
                 trial.finish('wall_timeout');break
+            if view and view.paused:
+                time.sleep(.01);continue
             w,cp=time.perf_counter(),time.process_time();Sofa.Simulation.animate(root,c.dt)
             elapsed+=time.perf_counter()-w;cpu+=time.process_time()-cp
+        if view:
+            view.process(trial,force=True);view.screenshot(a.output/'gui_final.png')
         reader=RecordingReader(a.output/'physical_recording');reader.verify()
         assert reader.frame_count==trial.ticks+1
         np.testing.assert_array_equal(reader.frame(reader.frame_count-1)['poses'],h['state'].position.value)
@@ -106,6 +119,7 @@ def main():
         run_status=0 if trial.summary['reason'] in ('duration_completed','zero_input_completed','station_reached','trajectory_completed','stalled_at_cable_limit') else 2
     finally:
         if trial is not None and not trial.done:trial.finish('runner_exception')
+        if view:view.close()
         Sofa.Simulation.unload(root)
 
     # Separate processes release SOFA before loading the full rendering mesh.
