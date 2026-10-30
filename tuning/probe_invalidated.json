@@ -1,0 +1,7 @@
+{
+  "valid_for_screening": false,
+  "reason": "Baseline reconstruction differs by 17.8177mm after one step and creates spurious contact loads; hidden SOFA/solver state was not restored. All probe results discarded; no parameter ranking or route success derived from them.",
+  "all_results": "probe_results.jsonl",
+  "archived_outputs": "/home/maxlab1/xhy/robotics/MagRobot/experiments/tendon_sofa/outputs/rejected_checkpoint_probes",
+  "do_not_use_for_parameter_selection": true
+}

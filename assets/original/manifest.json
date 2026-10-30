@@ -1,0 +1,29 @@
+{
+  "inner_diameter_mm": 40,
+  "outer_diameter_mm": 46,
+  "wall_thickness_mm": 3,
+  "actual_open_port_count": 2,
+  "physical_collision_file": "wall_world_m.stl",
+  "physical_unit": "m",
+  "physical_loader_scale": 1,
+  "flipNormals": false,
+  "length_mm": 1338.8955564479277,
+  "vertices": 343040,
+  "triangles": 686080,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "degenerate_faces": 0,
+  "euler": 0,
+  "signed_volume_mm3": 542358.3465776406,
+  "radial_error_mm": 8.171241461241152e-14,
+  "inlet_outlet_position_error_mm": 0.0,
+  "nonlocal_centerline_pairs_within_46_5mm": 0,
+  "self_intersection_validation": "Local radius and nonlocal centreline clearance prechecks only; exact triangle-triangle intersection not run",
+  "simulation_started": false,
+  "original_asset_modified": false,
+  "files": {
+    "wall_world_m.stl": "47abe54977f6e71f0bb827250a5ba1e999ab239a43da63d26cb7a119c87f8ba6",
+    "geometry_world_m.npz": "4aa1c93f19295cb7db57099ab34a695701ea990677f3a3730d4e0391b163f468",
+    "centerline_world_m.csv": "d7eb68fd5b32a617f12da7423413b09429c8e8593bf0190c98385adbe69d3c96"
+  }
+}

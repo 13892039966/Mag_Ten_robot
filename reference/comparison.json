@@ -1,0 +1,235 @@
+{
+  "rows": [
+    {
+      "dt_ms": 5,
+      "summary": {
+        "reason": "duration_completed",
+        "detail": null,
+        "physics_steps": 40000,
+        "simulated_s": 200.0,
+        "wall_s": 1266.686089899973,
+        "maximum_tip_displacement_mm": 446.73778383417937,
+        "peak_force_n": 1.7694205971381338,
+        "maximum_relative_edge_stretch": 0.06217360404055039,
+        "phases": {
+          "colon_route": {
+            "rmse_mm": 10.863971220085746,
+            "final_error_mm": 10.2140768468715,
+            "max_error_mm": 20.48283309288384
+          }
+        },
+        "peak_contact_force_n": 0.7656399840559998,
+        "peak_wall_penetration_m": 0.0,
+        "progress_m": 0.7503056329456083,
+        "recorded_frames": 40001,
+        "station_target_m": 1.3388750749768874,
+        "station_reached": false,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "scope": "Physical simulation result, not calibrated hardware accuracy or full-route success."
+      },
+      "geometry": {
+        "status": "duration_completed",
+        "task_finished": true,
+        "station_reached": false,
+        "raw_frames": 40001,
+        "recorded_end_s": 200.0,
+        "route_length_mm": 1338.8750749768874,
+        "final_actual_station_mm": 750.3056329456083,
+        "final_centerline_distance_mm": 5.6587352074508095,
+        "tip_to_exit_distance_mm": 477.5544341641681,
+        "max_centerline_distance_mm": 12.36213461415356,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "asset": {
+          "kind": "user_phantom40_complete_wall",
+          "mesh_path": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\wall_world_m.stl",
+          "mesh_sha256": "47abe54977f6e71f0bb827250a5ba1e999ab239a43da63d26cb7a119c87f8ba6",
+          "geometry_npz": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\geometry_world_m.npz",
+          "geometry_npz_sha256": "4aa1c93f19295cb7db57099ab34a695701ea990677f3a3730d4e0391b163f468",
+          "flipNormals": false,
+          "inner_diameter_mm": 40.0,
+          "outer_diameter_mm": 46.0,
+          "wall_thickness_mm": 3.0,
+          "polyline_length_m": 1.3388750749768874
+        },
+        "scope": "Independent geometric projections and saved-frame checks; lookahead target error is not centerline lateral error."
+      },
+      "timing": {
+        "setup_including_init_wall_s": 7.067644900002051,
+        "initialization_wall_s": 0.04957470000954345,
+        "animate_including_callbacks_wall_s": 1265.0585070001543,
+        "animate_including_callbacks_cpu_s": 2342.796875,
+        "steps": 40000,
+        "total_before_unload_wall_s": 1279.4682495000307,
+        "scope": "animate includes controller, safety, recording and progress callbacks; setup separately measured"
+      },
+      "compared_until_s": 200.0,
+      "common_samples": 10000,
+      "max_position_mm": 0.0,
+      "max_position_location": null,
+      "max_tip_mm": 0.0,
+      "max_active_mm": 0.0,
+      "max_passive_mm": 0.0,
+      "max_force_difference_n": 0.0,
+      "max_command_difference_mm": 0.0,
+      "wall_seconds_per_sim_second": 6.325292535000772,
+      "interpretation": "Closed-loop divergence including different inputs, not pure integration error; only common coverage."
+    },
+    {
+      "dt_ms": 10,
+      "summary": {
+        "reason": "duration_completed",
+        "detail": null,
+        "physics_steps": 20000,
+        "simulated_s": 200.0,
+        "wall_s": 452.95567100000335,
+        "maximum_tip_displacement_mm": 446.5760410585792,
+        "peak_force_n": 1.7716699893278207,
+        "maximum_relative_edge_stretch": 0.06168767412780929,
+        "phases": {
+          "colon_route": {
+            "rmse_mm": 10.872798383272833,
+            "final_error_mm": 10.290744454101064,
+            "max_error_mm": 20.36824804134121
+          }
+        },
+        "peak_contact_force_n": 0.7676529716958593,
+        "peak_wall_penetration_m": 0.0,
+        "progress_m": 0.7502569999831479,
+        "recorded_frames": 20001,
+        "station_target_m": 1.3388750749768874,
+        "station_reached": false,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "scope": "Physical simulation result, not calibrated hardware accuracy or full-route success."
+      },
+      "geometry": {
+        "status": "duration_completed",
+        "task_finished": true,
+        "station_reached": false,
+        "raw_frames": 20001,
+        "recorded_end_s": 200.0,
+        "route_length_mm": 1338.8750749768874,
+        "final_actual_station_mm": 750.2569999831479,
+        "final_centerline_distance_mm": 5.79089969072369,
+        "tip_to_exit_distance_mm": 477.6638205790231,
+        "max_centerline_distance_mm": 12.37157106492504,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "asset": {
+          "kind": "user_phantom40_complete_wall",
+          "mesh_path": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\wall_world_m.stl",
+          "mesh_sha256": "47abe54977f6e71f0bb827250a5ba1e999ab239a43da63d26cb7a119c87f8ba6",
+          "geometry_npz": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\geometry_world_m.npz",
+          "geometry_npz_sha256": "4aa1c93f19295cb7db57099ab34a695701ea990677f3a3730d4e0391b163f468",
+          "flipNormals": false,
+          "inner_diameter_mm": 40.0,
+          "outer_diameter_mm": 46.0,
+          "wall_thickness_mm": 3.0,
+          "polyline_length_m": 1.3388750749768874
+        },
+        "scope": "Independent geometric projections and saved-frame checks; lookahead target error is not centerline lateral error."
+      },
+      "timing": {
+        "setup_including_init_wall_s": 4.271457299997564,
+        "initialization_wall_s": 0.020781599974725395,
+        "animate_including_callbacks_wall_s": 452.1064952905872,
+        "animate_including_callbacks_cpu_s": 823.140625,
+        "steps": 20000,
+        "total_before_unload_wall_s": 461.3985645999783,
+        "scope": "animate includes controller, safety, recording and progress callbacks; setup separately measured"
+      },
+      "compared_until_s": 200.0,
+      "common_samples": 10000,
+      "max_position_mm": 16.937272182663424,
+      "max_position_location": {
+        "t": 91.3,
+        "node": 112
+      },
+      "max_tip_mm": 16.937272182663424,
+      "max_active_mm": 16.937272182663424,
+      "max_passive_mm": 8.205730930217463,
+      "max_force_difference_n": 0.09294937156494398,
+      "max_command_difference_mm": 2.1931155931844692,
+      "wall_seconds_per_sim_second": 2.2605324764529358,
+      "interpretation": "Closed-loop divergence including different inputs, not pure integration error; only common coverage."
+    },
+    {
+      "dt_ms": 20,
+      "summary": {
+        "reason": "duration_completed",
+        "detail": null,
+        "physics_steps": 10000,
+        "simulated_s": 200.0,
+        "wall_s": 200.89540070004296,
+        "maximum_tip_displacement_mm": 446.6027123751286,
+        "peak_force_n": 1.8100371038931626,
+        "maximum_relative_edge_stretch": 0.060182307575516125,
+        "phases": {
+          "colon_route": {
+            "rmse_mm": 11.167979123562576,
+            "final_error_mm": 10.272395664149162,
+            "max_error_mm": 23.882581746839428
+          }
+        },
+        "peak_contact_force_n": 0.7722053307362792,
+        "peak_wall_penetration_m": 0.0,
+        "progress_m": 0.7490581362533024,
+        "recorded_frames": 10001,
+        "station_target_m": 1.3388750749768874,
+        "station_reached": false,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "scope": "Physical simulation result, not calibrated hardware accuracy or full-route success."
+      },
+      "geometry": {
+        "status": "duration_completed",
+        "task_finished": true,
+        "station_reached": false,
+        "raw_frames": 10001,
+        "recorded_end_s": 200.0,
+        "route_length_mm": 1338.8750749768874,
+        "final_actual_station_mm": 749.0581362533025,
+        "final_centerline_distance_mm": 5.810531126066774,
+        "tip_to_exit_distance_mm": 478.2372247109521,
+        "max_centerline_distance_mm": 14.466778723719328,
+        "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+        "asset": {
+          "kind": "user_phantom40_complete_wall",
+          "mesh_path": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\wall_world_m.stl",
+          "mesh_sha256": "47abe54977f6e71f0bb827250a5ba1e999ab239a43da63d26cb7a119c87f8ba6",
+          "geometry_npz": "E:\\MagRobotGpuLab\\gpu_colon_training_9h_20261016\\experiments\\phantom_R40_complete_wall_20261022\\geometry_world_m.npz",
+          "geometry_npz_sha256": "4aa1c93f19295cb7db57099ab34a695701ea990677f3a3730d4e0391b163f468",
+          "flipNormals": false,
+          "inner_diameter_mm": 40.0,
+          "outer_diameter_mm": 46.0,
+          "wall_thickness_mm": 3.0,
+          "polyline_length_m": 1.3388750749768874
+        },
+        "scope": "Independent geometric projections and saved-frame checks; lookahead target error is not centerline lateral error."
+      },
+      "timing": {
+        "setup_including_init_wall_s": 9.299082099983934,
+        "initialization_wall_s": 0.026617799943778664,
+        "animate_including_callbacks_wall_s": 200.13157569844043,
+        "animate_including_callbacks_cpu_s": 355.3125,
+        "steps": 10000,
+        "total_before_unload_wall_s": 211.31820549996337,
+        "scope": "animate includes controller, safety, recording and progress callbacks; setup separately measured"
+      },
+      "compared_until_s": 200.0,
+      "common_samples": 10000,
+      "max_position_mm": 17.284422869219636,
+      "max_position_location": {
+        "t": 91.26,
+        "node": 112
+      },
+      "max_tip_mm": 17.284422869219636,
+      "max_active_mm": 17.284422869219636,
+      "max_passive_mm": 10.850424457763271,
+      "max_force_difference_n": 0.24073492273176678,
+      "max_command_difference_mm": 8.610000034454114,
+      "wall_seconds_per_sim_second": 1.0006578784922022,
+      "interpretation": "Closed-loop divergence including different inputs, not pure integration error; only common coverage."
+    }
+  ],
+  "original_terminal_gates_retained": true,
+  "physics_units": "m, s, N",
+  "whole_route_length_mm": 1338.8750749768874
+}

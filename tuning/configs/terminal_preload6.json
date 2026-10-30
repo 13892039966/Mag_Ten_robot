@@ -1,0 +1,5 @@
+{
+  "lookahead": 0.025,
+  "terminal_zone_m": 0.15,
+  "terminal_cable_preload_m": 0.006
+}

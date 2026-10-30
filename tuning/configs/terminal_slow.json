@@ -1,0 +1,6 @@
+{
+  "lookahead": 0.025,
+  "terminal_zone_m": 0.15,
+  "terminal_feed_speed_scale": 0.1,
+  "terminal_velocity_damping": 5.0
+}

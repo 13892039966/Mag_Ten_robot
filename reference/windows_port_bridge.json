@@ -1,0 +1,12 @@
+{
+  "platform": "Windows SOFA25 bridge only",
+  "linux_verified": false,
+  "frames": 201,
+  "seconds": 1.0,
+  "native_libraries": "Existing Windows DLLs substituted at runtime, not shipped in bundle",
+  "max_abs_differences": {
+    "poses": 0.0,
+    "velocities": 0.0,
+    "commands": 0.0
+  }
+}

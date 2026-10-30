@@ -1,0 +1,125 @@
+{
+  "dt": 0.005,
+  "node_count": 113,
+  "total_frames": 201,
+  "complete": true,
+  "reason": "duration_completed",
+  "metadata": {
+    "robot": {
+      "passive_length_m": 1.8,
+      "active_length_m": 0.2,
+      "edge_length_m": 0.005,
+      "radius_m": 0.007,
+      "inner_radius_m": 0.006,
+      "cable_radius_m": 0.0065,
+      "young_modulus_pa": 1000000.0,
+      "density_kg_m3": 300.0,
+      "tip_mass_kg": 0.0015,
+      "dt": 0.005,
+      "cable_speed_m_s": 0.001,
+      "cable_limit_m": 0.03,
+      "cable_force_n": 2.0,
+      "feed_speed_m_s": 0.005,
+      "feed_limit_m": 1.4,
+      "passive_edge_m": 0.025,
+      "active_edge_m": 0.005
+    },
+    "model_label": "active200mm_passive1800mm",
+    "mode": "colon",
+    "layout": {
+      "active_index": 72,
+      "entry": [
+        -0.44221198758590813,
+        0.11082876665656702,
+        0.9085835377673055
+      ],
+      "direction": [
+        -0.6823808596165533,
+        -0.7027357143392587,
+        -0.20129301582783696
+      ],
+      "initial_insertion": 0.0
+    },
+    "physics": "native_SOFA_BeamAdapter",
+    "dt": 0.005,
+    "gravity": [
+      0,
+      0,
+      0
+    ],
+    "controller": "bounded DLS, released active CC Jacobian after last guide pin, actual free-junction rotation; approximate feed column",
+    "outside_guide": "original upstream -5mm release boundary",
+    "reference_duration_s": 300.0,
+    "requested_seconds": 1.0,
+    "wall_time_limit_s": null,
+    "until_terminal": false,
+    "zero_inputs": false,
+    "control_period_s": 0.02,
+    "control_stride_steps": 4,
+    "contacts": true,
+    "learning": false,
+    "native_rate_factor": 0.0,
+    "command_slew_speed_m_s": 0.001,
+    "prepared_centerline_start": false,
+    "natural_beam_shape": "straight",
+    "required_initial_shortening_m": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "source_sha256": {
+      "tendon_sim\\actuator_gauge.py": "7f03010d0e4293f4f11dbc4e400301ebd9e97ee355abd95bfc737384b528f667",
+      "tendon_sim\\body_geometry.py": "42bfd61794249217a571e4c773fd1cbf0fc6e30a00609f3b50b143451b26a813",
+      "tendon_sim\\bootstrap.py": "7b823ff26a3baecd1de6b17cba5d4000a865fd95b36afa0ec7a3aae8b98856d4",
+      "tendon_sim\\cc_predictor.py": "7bcf6fdd02404b90d1276c6299f8c9f7a5160f5f77c896d476c5aa97d1b96a00",
+      "tendon_sim\\closed_loop.py": "571753e3e322cd16efffc89fa3ec15b10e35bb78196e9f1340f78203cc7e63a5",
+      "tendon_sim\\contact_forces.py": "466472d6a8ec2fd3c15e2c3eed33b639fe19515edee946b8045c5d7e856603ac",
+      "tendon_sim\\fast_safety.py": "25e76c443b5074dd570663a819977ccde251a00988baab3f071032e473090d07",
+      "tendon_sim\\force_adapter.py": "3d4bf97f3ccbd0be83a708276304cf96362333b0defe8a63cf0b9132470fc643",
+      "tendon_sim\\geometry_adapter.py": "8976947816727e4387823092b9718314d06757bf955af7af04f69fee57c22d30",
+      "tendon_sim\\geometry_math.py": "c4c00726c528f1744569a4e761ed3ad20e64406461ac11bce5b123990af29dda",
+      "tendon_sim\\libigl_wall.py": "b93fee8ffcf5fafec14a9974ff7310ee329aa6524d30479cbd5197d7ea581b13",
+      "tendon_sim\\live_scene.py": "6b793f47b37a28cc9eeba9398011fd864431d967926a76a2a2319cc40f28cead",
+      "tendon_sim\\logging_output.py": "bec499ef770c402c06654fcc4e4dd0bb0653c0d9c3efe62b16ab0cebde92fa03",
+      "tendon_sim\\mapping25.py": "fa78d52d283e929b968a239e14b7b8941767373b622961824c1c3762cc4bfdac",
+      "tendon_sim\\model.py": "7eccf53da10ace16fef3bd16ac7fb928dc59c275906eb02b7576e5cf0c3785b7",
+      "tendon_sim\\physical_recording.py": "8e36d94fc4df4332cd28a7f41476e3ac74f32eddcfaed9a2188928c08b3d8588",
+      "tendon_sim\\physics.py": "b11cf857346ace3353aaa6d58e04eb2a5419d46205341066bc1e5ddf1055ff7f",
+      "tendon_sim\\polyline_query.py": "9ff37bb45bc8c4330d80ca40c2023aab28b03323d2406e0154daffe978b0d7fa",
+      "tendon_sim\\recorded_geometry.py": "639a54d718be7e1b6dbb9d2dea99b62e99e78061faf859aa1b3a45de0785fc8f",
+      "tendon_sim\\references.py": "67e03538434958e5e741f4f14e0de0c9cbb3241d7f39ca7f1616a379c33a9292",
+      "tendon_sim\\released_active.py": "29f61a38a244da0d17ed3a3f296d9471b84ebb42e03d05d892893484ac80658a",
+      "tendon_sim\\run_limits.py": "34cbaedf52f13b7161f13840be806b44341e8afaf89c7c10572e565ab1ea5d32",
+      "tendon_sim\\scheduler.py": "7b545fa3708c0512303cc50637fa6352db740d4b1db5cf903fb6fdca4bd53cef",
+      "tendon_sim\\stl_io.py": "65262757eb0a6d8c8494227f38edd36372b2afabeb2110774d29d1ac3f1658ed",
+      "tendon_sim\\__init__.py": "bde78df1c070663c6d7bb673af081cf50f5ce98ec7ac07a9b75faa47715e9860"
+    },
+    "actuator_allocation": "differential tendon command integrator, feed for axial travel; every-step slew and range limits",
+    "geometry_asset": {
+      "kind": "user_phantom40_complete_wall",
+      "mesh_path": "C:\\Users\\29613\\Desktop\\robotics\\MagRobot\\exports\\tendon_sofa_ubuntu2204_20261029\\assets\\original\\wall_world_m.stl",
+      "geometry_npz": "C:\\Users\\29613\\Desktop\\robotics\\MagRobot\\exports\\tendon_sofa_ubuntu2204_20261029\\assets\\original\\geometry_world_m.npz",
+      "mesh_sha256": "47abe54977f6e71f0bb827250a5ba1e999ab239a43da63d26cb7a119c87f8ba6",
+      "geometry_npz_sha256": "4aa1c93f19295cb7db57099ab34a695701ea990677f3a3730d4e0391b163f468",
+      "flipNormals": false
+    },
+    "backend": "libigl2.6.0_single_closest",
+    "collision_triangles": 171776
+  },
+  "chunks": [
+    {
+      "file": "chunk_000000.npz",
+      "start_index": 0,
+      "count": 200,
+      "sha256": "7956c62b7c941f0b877c2a44757931185c591b9eb9e5d852b15ee95862d9dc6a"
+    },
+    {
+      "file": "chunk_000001.npz",
+      "start_index": 200,
+      "count": 1,
+      "sha256": "21d878ee1e0eb9d5bace71e976f8b31b9966e75e281dc0a994e4f5e8a4dede84"
+    }
+  ],
+  "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1"
+}

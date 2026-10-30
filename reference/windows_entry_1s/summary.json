@@ -1,0 +1,25 @@
+{
+  "reason": "duration_completed",
+  "detail": null,
+  "physics_steps": 200,
+  "simulated_s": 1.0,
+  "wall_s": 8.784287999966182,
+  "maximum_tip_displacement_mm": 4.409844506881312,
+  "peak_force_n": 1.4062392315349324,
+  "maximum_relative_edge_stretch": 0.035011308111553396,
+  "phases": {
+    "colon_route": {
+      "rmse_mm": 7.97825607647024,
+      "final_error_mm": 7.989002357634995,
+      "max_error_mm": 7.989304082737393
+    }
+  },
+  "peak_contact_force_n": 0.0,
+  "peak_wall_penetration_m": 0.0,
+  "progress_m": 0.0044221591612171145,
+  "recorded_frames": 201,
+  "station_target_m": 1.3388750749768874,
+  "station_reached": false,
+  "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1",
+  "scope": "Physical simulation result, not calibrated hardware accuracy or full-route success."
+}

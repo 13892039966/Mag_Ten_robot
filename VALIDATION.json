@@ -1,0 +1,29 @@
+{
+  "ubuntu_target": "22.04 x86_64",
+  "linux_native_compile_verified": false,
+  "linux_physics_verified": false,
+  "linux_dependency_solve": {
+    "success": true,
+    "platform": "linux-64",
+    "virtual_glibc": "2.35",
+    "virtual_linux": "5.15",
+    "packages": 183
+  },
+  "windows_bridge_seconds": 1,
+  "windows_bridge_frames": 201,
+  "windows_bridge_max_abs_pose_velocity_command_difference": 0.0,
+  "portable_unit_tests": 5,
+  "bundle_structure_tests": 3,
+  "shell_syntax_checked": [
+    "install.sh",
+    "activate.sh",
+    "build.sh"
+  ],
+  "dependency_scan_issues": [],
+  "known_limits": [
+    "duplicate BaseMass retained",
+    "no full exact mesh self-intersection certification",
+    "single closest contact not certified equivalent to old LMD",
+    "cross-platform contact physics still needs target regression"
+  ]
+}

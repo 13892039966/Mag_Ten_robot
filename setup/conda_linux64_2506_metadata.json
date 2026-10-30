@@ -1,0 +1,942 @@
+[
+  {
+    "file": "libsofa-25.06.00-h1dce809_0.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "h1dce809_0",
+    "depends": [
+      "zlib",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0"
+    ],
+    "sha256": "04fda0c86ec95d6fcfc7ab87289732aa4094e1ae7a64e89d4c7667edea4edc94"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_2.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_2",
+    "depends": [
+      "zlib",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "9c7390925b37163dd91af4540884ef69b91373604c0d0e9ef56ce6c14659180a"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_3.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_3",
+    "depends": [
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "a034671558fafcecc4cd298fe4221d3701d1a9750b04dc75aa450ce08d3ebea8"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_4.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_4",
+    "depends": [
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "9d3bc7acc47f797ba8ed64bd6863b9540089175eb4c47af1421588d6ef86e887"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_5.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_5",
+    "depends": [
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "420295a16a33a28a7d033c2ba045c27e11adf07f3c65016aec15c8b9e1052285"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_6.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_6",
+    "depends": [
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "b289d52f28d00e5e733bfa015f0a469aa8a408a5826d02e1ec70aa49dcccf2f5"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_7.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_7",
+    "depends": [
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0"
+    ],
+    "sha256": "e97c5857d61290c463fc3cb3cc8ade014fbe104ec1d1f0b4f4bd9e9581223a57"
+  },
+  {
+    "file": "libsofa-25.06.00-hb022e42_8.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hb022e42_8",
+    "depends": [
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "7071f691c41ff35c467d6d414489bbe7443d517ce52c45bbfbe08ff715e25241"
+  },
+  {
+    "file": "libsofa-25.06.00-hcf00f44_1.conda",
+    "name": "libsofa",
+    "version": "25.06.00",
+    "build": "hcf00f44_1",
+    "depends": [
+      "zlib",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0"
+    ],
+    "sha256": "c6c0b9a30b7a4fb16cd445a82ac5674f6299df8aadbaffc4ae1c5eb4c9821fed"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h04ff66a_0.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h04ff66a_0",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "6090473be9da99a074d8ad4d4067ecd174bd690491682b60fc98c37d54912f74"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h12aa6ae_3.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h12aa6ae_3",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "024b6927564d890b16ced693cd0867aa4e587f19a0db03713ac35b11558eda61"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h19949ff_2.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h19949ff_2",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "504e61ea4cb59e5079bfdbf3308629d0e427720a5f79052fba31588f46f8b74f"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h49db7fd_4.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h49db7fd_4",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "6c74b4b3d6ac6ce7cb8278085eae3775f559c703a2afa45ee1b7db846ddaa45b"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h49db7fd_5.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h49db7fd_5",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "8e9ba6a08b1bb902ffc75beca3c9f8057c157553ea8c4854dbb8477d0c67533f"
+  },
+  {
+    "file": "sofa-beamadapter-25.06.00-h5960cfe_1.conda",
+    "name": "sofa-beamadapter",
+    "version": "25.06.00",
+    "build": "h5960cfe_1",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "c6ee29b9cddb6ab8b315ae25b849eb0c24e776d5c42b685103a602e06888ba6f"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h08e4335_2.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h08e4335_2",
+    "depends": [
+      "libsofa ==25.6.0 hb022e42_2",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "01fd742c412dfad0fc454772b8e4bb5919e3168f6e87fe47d19b33b33553fdf8"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h10daa35_5.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h10daa35_5",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "zlib",
+      "libsofa ==25.6.0 hb022e42_5",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0"
+    ],
+    "sha256": "2ac06c5b968d87d548ae6826761566a3360e052e4e3d54938b70b06a4369de0d"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h3788405_8.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h3788405_8",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "zlib",
+      "cxxopts",
+      "libsofa ==25.6.0 hb022e42_8",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0"
+    ],
+    "sha256": "128e3cd469b7756026ec16371200ae0faa474f909c0fd8a21ed8560c0ab16a99"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h47cb13c_1.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h47cb13c_1",
+    "depends": [
+      "libsofa ==25.6.0 hcf00f44_1",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "5e06e2feb2bac2c84dbf1dc1b8abd9ab92b557158224b39b08426fed3057f261"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h512c32a_4.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h512c32a_4",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "zlib",
+      "libsofa ==25.6.0 hb022e42_4",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "4a81c9862b4dbdefbed74d93186b1c938dbfac9c442ef72946ec2aac07df7f1b"
+  },
+  {
+    "file": "sofa-devel-25.06.00-h990779c_7.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "h990779c_7",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "zlib",
+      "cxxopts",
+      "libsofa ==25.6.0 hb022e42_7",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "295ec6337994c057491ba1a08d406ce5e539ca7aed27c615a534ec21eb95c6ca"
+  },
+  {
+    "file": "sofa-devel-25.06.00-ha0d9187_3.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "ha0d9187_3",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "libsofa ==25.6.0 hb022e42_3",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "f5723fc8382f1d8b7ef529bc19f1e8cf6ef16fd0af8a05437cd5fcaa340c725e"
+  },
+  {
+    "file": "sofa-devel-25.06.00-hab08f23_0.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "hab08f23_0",
+    "depends": [
+      "libsofa ==25.6.0 h1dce809_0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "33e91c49e074b7c3b0472421ddaf26265edde3d312a9128fc21230b55cb84388"
+  },
+  {
+    "file": "sofa-devel-25.06.00-hfb56976_6.conda",
+    "name": "sofa-devel",
+    "version": "25.06.00",
+    "build": "hfb56976_6",
+    "depends": [
+      "libboost-headers",
+      "eigen",
+      "zlib",
+      "cxxopts",
+      "libsofa ==25.6.0 hb022e42_6",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "0a427bb82c3eac74a76d18b55c11f35bc21780b86c8ded69e992580901758ede"
+  },
+  {
+    "file": "sofa-gl-25.06.00-h402fd7e_5.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "h402fd7e_5",
+    "depends": [
+      "sofa-devel ==25.6.0 h10daa35_5",
+      "eigen",
+      "libboost-headers",
+      "libglu",
+      "libgl-devel",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libgl >=1.7.0,<2.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "glew >=2.2.0,<2.3.0a0"
+    ],
+    "sha256": "3af7d8997a0b9d70b67dd945010b6ed2088b1fe437b1ef5e9311f2fe0e49afaa"
+  },
+  {
+    "file": "sofa-gl-25.06.00-h403a752_8.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "h403a752_8",
+    "depends": [
+      "sofa-devel ==25.6.0 h3788405_8",
+      "eigen",
+      "libglu",
+      "libgl-devel",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "glew >=2.3.0,<2.4.0a0",
+      "libgl >=1.7.0,<2.0a0"
+    ],
+    "sha256": "5e79e5ef75a3f22b5e13763431ab71e420123f74b6a9fa2b42d21e5cc88c5f99"
+  },
+  {
+    "file": "sofa-gl-25.06.00-h5737c6f_2.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "h5737c6f_2",
+    "depends": [
+      "libsofa ==25.6.0 hb022e42_2",
+      "libglu",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "glew >=2.2.0,<2.3.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "6450744ac3c332c831a61b91ae8fcca24d8562edd9f68ea6bdbfddff50611cb9"
+  },
+  {
+    "file": "sofa-gl-25.06.00-h818f49f_7.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "h818f49f_7",
+    "depends": [
+      "sofa-devel ==25.6.0 h990779c_7",
+      "eigen",
+      "libglu",
+      "libgl-devel",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "libgl >=1.7.0,<2.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "glew >=2.3.0,<2.4.0a0"
+    ],
+    "sha256": "ef958f3e314225c06fbcf0ba7dc4fed819b1e92d307b1fbf0c93138ddd0250ac"
+  },
+  {
+    "file": "sofa-gl-25.06.00-ha15f2fb_1.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "ha15f2fb_1",
+    "depends": [
+      "libsofa ==25.6.0 hcf00f44_1",
+      "libglu",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "glew >=2.1.0,<2.2.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "a76f54bb7f2deadbee064b2e9d7e244a388f5f06a97957e4c5ec1aa6a2f8a53d"
+  },
+  {
+    "file": "sofa-gl-25.06.00-hcc7c543_6.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "hcc7c543_6",
+    "depends": [
+      "sofa-devel ==25.6.0 hfb56976_6",
+      "eigen",
+      "libglu",
+      "libgl-devel",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "glew >=2.2.0,<2.3.0a0",
+      "libgl >=1.7.0,<2.0a0"
+    ],
+    "sha256": "69da0751996072e2eba8e99c8d553bb5e27bdabb9ebb9700cea4588b44f0f60f"
+  },
+  {
+    "file": "sofa-gl-25.06.00-hf453fd6_3.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "hf453fd6_3",
+    "depends": [
+      "sofa-devel ==25.6.0 ha0d9187_3",
+      "eigen",
+      "libboost-headers",
+      "libglu",
+      "libgl-devel",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libgl >=1.7.0,<2.0a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "glew >=2.2.0,<2.3.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0",
+      "libzlib >=1.3.1,<2.0a0"
+    ],
+    "sha256": "771003be3db551afd3fe89f57c3c77c655cece951c10e3e0540427b421b1bf1f"
+  },
+  {
+    "file": "sofa-gl-25.06.00-hfa246f3_4.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "hfa246f3_4",
+    "depends": [
+      "sofa-devel ==25.6.0 h512c32a_4",
+      "eigen",
+      "libboost-headers",
+      "libglu",
+      "libgl-devel",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libgl >=1.7.0,<2.0a0",
+      "glew >=2.2.0,<2.3.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "libglu >=9.0.3,<9.1.0a0"
+    ],
+    "sha256": "85eb49ebbfa5df4bca3bbebadcbd2920b581ff013980d48e0d8b94c3f2a1e21a"
+  },
+  {
+    "file": "sofa-gl-25.06.00-hfb57c8c_0.conda",
+    "name": "sofa-gl",
+    "version": "25.06.00",
+    "build": "hfb57c8c_0",
+    "depends": [
+      "libsofa ==25.6.0 h1dce809_0",
+      "libglu",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "glew >=2.1.0,<2.2.0a0",
+      "libglu >=9.0.3,<9.1.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "gtest >=1.17.0,<1.17.1.0a0",
+      "libzlib >=1.3.1,<2.0a0",
+      "tinyxml2 >=11.0.0,<11.1.0a0"
+    ],
+    "sha256": "3e3176d6acc74a4b8346bb4a7cd7404b7874c54fe53b4ac3d0e4b9222f392dd4"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312h4a1f26e_2.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312h4a1f26e_2",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-gl >=25.6,<25.7.0a0",
+      "numpy >=2.3.5,<3.0a0",
+      "python",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "numpy >=1.23,<3",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "glew >=2.2.0,<2.3.0a0",
+      "sofa-gl >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "f7a986fbe7229d7fe74b4ae5dd8f2c7017f43e1e0b5360b222951e420be16604"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312h9e8bcb2_4.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312h9e8bcb2_4",
+    "depends": [
+      "python",
+      "pybind11",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "numpy >=1.23,<3",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "python_abi 3.12.* *_cp312",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "fa5f41add88f0e6c56ea2a2d263ab1e77e6dec144fb62ea2a4939ba1d0f04b2f"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312h9e8bcb2_5.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312h9e8bcb2_5",
+    "depends": [
+      "python",
+      "pybind11",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "numpy >=1.23,<3",
+      "python_abi 3.12.* *_cp312",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "1dc4c15f945568892980cbd83d3842365b0b994e68ca3aecad8612458d29347e"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312h9e8bcb2_6.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312h9e8bcb2_6",
+    "depends": [
+      "python",
+      "pybind11",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "numpy >=1.23,<3",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "64b57e01c35cbc4d95e3f2840297041e89ea8055b700f5e491293fa27bc4f6f8"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312h9e8bcb2_7.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312h9e8bcb2_7",
+    "depends": [
+      "python",
+      "pybind11",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "python_abi 3.12.* *_cp312",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "numpy >=1.23,<3",
+      "sofa-gl >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "677fc599300e4a7bcb03419c4945a2b8cd7efad7e67859d89cb525a259ef8293"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312hb389533_1.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312hb389533_1",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-gl >=25.6,<25.7.0a0",
+      "numpy >=2.3.3,<3.0a0",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "numpy >=1.23,<3",
+      "python_abi 3.12.* *_cp312",
+      "glew >=2.1.0,<2.2.0a0"
+    ],
+    "sha256": "d3fee3f4c51f1b9fd9b2781fc8055b61c5b82ca4055bdce4a90e189f7bcf892b"
+  },
+  {
+    "file": "sofa-python3-25.06.00-np2py312hfa22587_3.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "np2py312hfa22587_3",
+    "depends": [
+      "python",
+      "pybind11",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "numpy >=1.23,<3",
+      "python_abi 3.12.* *_cp312"
+    ],
+    "sha256": "f454f7479eb248754a8971262fa14f801d590da5024c5478848ccec7011b8b7b"
+  },
+  {
+    "file": "sofa-python3-25.06.00-py312hec36b72_0.conda",
+    "name": "sofa-python3",
+    "version": "25.06.00",
+    "build": "py312hec36b72_0",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-gl >=25.6,<25.7.0a0",
+      "numpy >=2.3.3,<3.0a0",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "python_abi 3.12.* *_cp312",
+      "numpy >=1.23,<3",
+      "glew >=2.1.0,<2.2.0a0",
+      "sofa-gl >=25.6.0,<25.6.1.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "e63127fe955b353f69a56d787080b997c8a92496432112c20bbc0d4aafca43db"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312h015ea3b_4.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312h015ea3b_4",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "python",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-stlib >=25.6.0,<25.7.0a0",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "ffc9baf7e2c2d1462b15d8ca95fc075ea969b67c60711c11cdbadf99f9b11bfc"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312h015ea3b_5.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312h015ea3b_5",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "python_abi 3.12.* *_cp312",
+      "sofa-stlib >=25.6.0,<25.7.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "5b37e5251810d5d8eb804c650d87ed48948a0063516c63f43106d920e711aef1"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312h31e42b6_3.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312h31e42b6_3",
+    "depends": [
+      "sofa-devel 25.6.*",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "sofa-stlib >=25.6.0,<25.7.0a0",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "397b80a5aaa8d7f48661721d508240e13d605fb675f6e6c15132d6a0ca130b7a"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312h4bb7636_1.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312h4bb7636_1",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-stlib >=25.6,<25.7.0a0",
+      "python",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "sofa-stlib >=25.6.0,<25.7.0a0",
+      "python_abi 3.12.* *_cp312",
+      "libsofa >=25.6.0,<25.6.1.0a0"
+    ],
+    "sha256": "afd5efa9a34115fb06571547355385e798b501f8cf4e484d8ed1c1cb20aa1394"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312h79f4db9_2.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312h79f4db9_2",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-stlib >=25.6,<25.7.0a0",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-stlib >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "5cd50efe309e269009256bf57a016e5e5c7f292cad08bfab99be08564cd27a44"
+  },
+  {
+    "file": "sofa-softrobots-25.06.00-py312hec36b72_0.conda",
+    "name": "sofa-softrobots",
+    "version": "25.06.00",
+    "build": "py312hec36b72_0",
+    "depends": [
+      "sofa-devel >=25.6,<25.7.0a0",
+      "sofa-stlib >=25.6,<25.7.0a0",
+      "python",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "libsofa >=25.6.0,<25.6.1.0a0",
+      "sofa-stlib >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "b9196f23e2dda91c8d624645237ed034e351bc680487964d909767931a12dd3f"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312h015ea3b_4.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312h015ea3b_4",
+    "depends": [
+      "python",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "9672250676ee40b9ce1973bdb95272229b42a2114c4ad3ed3b37c02015a287b6"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312h015ea3b_5.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312h015ea3b_5",
+    "depends": [
+      "python",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "01535e015c9168c708385586a3704a0e929da70b59f968d003f67abd7b0a34cb"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312h2a71dfa_1.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312h2a71dfa_1",
+    "depends": [
+      "sofa-python3 >=25.6,<25.7.0a0",
+      "python",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "__glibc >=2.17,<3.0.a0",
+      "python_abi 3.12.* *_cp312",
+      "sofa-python3 >=25.6.0,<25.7.0a0"
+    ],
+    "sha256": "37c2c4dc08c2af685365b0fdbd036b1b32b773f196affe12cdefe93cae88b91d"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312h2dfc169_0.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312h2dfc169_0",
+    "depends": [
+      "sofa-python3 >=25.6,<25.7.0a0",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=13",
+      "libgcc >=13",
+      "sofa-python3 >=25.6.0,<25.7.0a0",
+      "python_abi 3.12.* *_cp312"
+    ],
+    "sha256": "c6c74a8ce9c7d15a89d3ac7c5072bd3ecd92c6ceada62d2df7c850ca49cda673"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312h31e42b6_3.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312h31e42b6_3",
+    "depends": [
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "sofa-python3 >=25.6.0,<25.7.0a0",
+      "python_abi 3.12.* *_cp312"
+    ],
+    "sha256": "043d88141d2b06802efca583d61927de1a265f6a390c3ff6c2072215a3a424c6"
+  },
+  {
+    "file": "sofa-stlib-25.06.00-py312ha94a0fc_2.conda",
+    "name": "sofa-stlib",
+    "version": "25.06.00",
+    "build": "py312ha94a0fc_2",
+    "depends": [
+      "sofa-python3 >=25.6,<25.7.0a0",
+      "python",
+      "__glibc >=2.17,<3.0.a0",
+      "libstdcxx >=14",
+      "libgcc >=14",
+      "sofa-python3 >=25.6.0,<25.7.0a0",
+      "python_abi 3.12.* *_cp312"
+    ],
+    "sha256": "c627388a3dde6718d722f748acaa376b2ec2c98f735735833b90095396209111"
+  }
+]

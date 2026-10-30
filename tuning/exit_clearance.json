@@ -1,0 +1,10 @@
+{
+  "true_exit_m": [
+    -0.32366219303437627,
+    0.22281374506317322,
+    0.995904175828573
+  ],
+  "exact_original_wall_clearance_mm": 19.99397629742313,
+  "collision_ball_radius_mm": 7.433034373659254,
+  "scope": "Geometric exit clearance only; not a full-body reachability or collision certificate."
+}

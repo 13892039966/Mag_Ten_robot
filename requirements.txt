@@ -1,0 +1,5 @@
+numpy
+scipy
+matplotlib
+pillow
+# SOFA/Python ABI and native build dependencies are fixed by setup/install.sh.

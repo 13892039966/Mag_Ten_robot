@@ -1,0 +1,10 @@
+{
+  "verified": true,
+  "original_files": 1389,
+  "modified_original_files": [
+    "run.py",
+    "tendon_sim/live_scene.py",
+    "tendon_sim/references.py"
+  ],
+  "unchanged_physics_safety_assets_and_locks": true
+}

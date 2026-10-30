@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+native/build/
+native/libigl_adapter/build/
+.install/
+outputs/
+*.log
+# Invalid checkpoint reconstructions are documented, not valid trial results.
+tuning/probe_results.jsonl

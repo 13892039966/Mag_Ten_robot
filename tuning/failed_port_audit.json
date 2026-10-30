@@ -1,0 +1,26 @@
+[
+  {
+    "run": "tune_lookahead25",
+    "tip_exit_axial_mm": 12.153160716453423,
+    "tip_exit_radial_mm": 16.43947869041872,
+    "invalid_recorded_nodes": [
+      112
+    ],
+    "invalid_node_lateral_mm": [
+      20.443966714233266
+    ],
+    "scope": "113 recorded nodes only; runtime safety checks all 401 mapped collision centres."
+  },
+  {
+    "run": "tune_terminal_distal100",
+    "tip_exit_axial_mm": 10.95208406497955,
+    "tip_exit_radial_mm": 16.98745853073801,
+    "invalid_recorded_nodes": [
+      112
+    ],
+    "invalid_node_lateral_mm": [
+      20.211924517470433
+    ],
+    "scope": "113 recorded nodes only; runtime safety checks all 401 mapped collision centres."
+  }
+]

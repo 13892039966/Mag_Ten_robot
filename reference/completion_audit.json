@@ -1,0 +1,47 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "dt_ms": 5,
+      "frames": 40001,
+      "physics_verified": true,
+      "original_wall_render_verified": true,
+      "visual_final_frame_reviewed": true
+    },
+    {
+      "dt_ms": 10,
+      "frames": 20001,
+      "physics_verified": true,
+      "original_wall_render_verified": true,
+      "visual_final_frame_reviewed": true
+    },
+    {
+      "dt_ms": 20,
+      "frames": 10001,
+      "physics_verified": true,
+      "original_wall_render_verified": true,
+      "visual_final_frame_reviewed": true
+    }
+  ],
+  "artifact_sha256": {
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\summary.json": "1d60fa03d03ab447fb5da17c11c8705aea601900093ea0cbc4177727360c5390",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\timing.json": "1dd4d157d52eeee00aa06118e6043105cd061072ede72dd174825eb192e3095b",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\recording_verification.json": "0af87aa57248a92d0c09d331f8d1395174186c26092d8b3da10bc344a4d2c998",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\independent_verification.json": "5cbc1cedf13abea639e2efaf35d06ede50f111b5775d8d517ac21f3064d01e6e",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\wholebody_with_colon.gif": "7b66d25d3a9e72d7abf0bc8e911bb176fb6bea8ed511a7a3c212d5328865b53b",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt5\\colon_render_verification.json": "f8ac23a660aba1787339711a5b892ed95ebbf18b352dbeb2e5e45c35567119cf",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\summary.json": "d8c415f312aa76ac3fd138f18eebcdcbd57ca1b7f95dfd2575808cd38297f9d5",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\timing.json": "7a16156e4584ad63ada7a4a13e1ff6fea6e49051f16c14be3dec0d2210add16c",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\recording_verification.json": "79426651fd9aa8706a1ead0c94b2c0a188efc41b44d2318200323a1d2e7b4f8a",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\independent_verification.json": "f934b831e9bd8850161a0e80708d4dff9ec27cd2867e4bfeb138daa548104149",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\wholebody_with_colon.gif": "05f33b0a46b734a28e9a39f67f3396379f4b410108ee01d059f575dcc2caeb8e",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt10\\colon_render_verification.json": "841c118e1f1c6f52aeb5aa7e20a24083ef801738b1196eb89adfd70fa9458aa8",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\summary.json": "ec641f6167ad3ce98aff44b395fda901415498428e394903b9ba9588a8ed954b",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\timing.json": "beda6eeaadb0c71dd106ad3c659d6ff0c84753b8fcf9f2afb8f1de0bb47ddcd6",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\recording_verification.json": "e84f4821b9aea9aef9c4ff722acadeb416c062c23c019c43ae721db76f224b44",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\independent_verification.json": "ece8e5861a6b84bbfcd984cc03ffabad6e86b8c739de9758b2f6d0b16b09e78e",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\wholebody_with_colon.gif": "cf669a774f4474ad48936feb3c4c632b0abfcc569855c636ab235a5258d76c1e",
+    "recordings\\libigl_timestep_20261029\\long200_001\\dt20\\colon_render_verification.json": "5f6080504c66b29b3d317bb571c4ad9766a1b8390743b71ac9ae02ced0738d18"
+  },
+  "initial_state_sha256": "8f75b68d3a4c6b9a215eb22f88dc7d05888ad1d2b060c0175927de4c504c15f1"
+}

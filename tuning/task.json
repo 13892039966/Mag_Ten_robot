@@ -1,0 +1,23 @@
+{
+  "start_utc": "2026-10-29T13:14:15Z",
+  "deadline_utc": "2026-10-29T22:14:15Z",
+  "physical_dt_s": 0.02,
+  "control_period_s": 0.02,
+  "cpu_pool": 4,
+  "acceptance": "Unchanged original RouteReference.reached: progress within 5mm and tip Euclidean distance <=5mm from true exit; no preceding invalid safety state.",
+  "unchanged": [
+    "geometry",
+    "physical material and mass",
+    "collision mesh and queries",
+    "force and speed upper limits",
+    "cable stroke",
+    "safety thresholds"
+  ],
+  "baseline": "outputs/dt20_terminal",
+  "baseline_source_hashes": {
+    "live_scene.py": "6b793f47b37a28cc9eeba9398011fd864431d967926a76a2a2319cc40f28cead",
+    "run.py": "36e00c1823e3bc5f783a7c7241422eaf48792666ecbd146f66d09432ff3aac44",
+    "references.py": "67e03538434958e5e741f4f14e0de0c9cbb3241d7f39ca7f1616a379c33a9292",
+    "closed_loop.py": "571753e3e322cd16efffc89fa3ec15b10e35bb78196e9f1340f78203cc7e63a5"
+  }
+}

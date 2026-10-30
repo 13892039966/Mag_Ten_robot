@@ -1,0 +1,6 @@
+{
+  "lookahead": 0.025,
+  "terminal_zone_m": 0.15,
+  "terminal_jacobian_distal_m": 0.05,
+  "terminal_velocity_damping": 5.0
+}
