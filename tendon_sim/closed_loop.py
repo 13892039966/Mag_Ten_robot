@@ -4,7 +4,7 @@ import math
 import time
 
 import numpy as np
-from scipy.optimize import lsq_linear
+from scipy.optimize import lsq_linear, minimize
 
 if __package__:
     from .cc_predictor import CCFourTendon
@@ -32,7 +32,7 @@ class BoundedDLS:
         self.speeds = np.array([c.cable_speed_m_s] * 4 + [c.feed_speed_m_s])
         self.limits = np.array([c.cable_limit_m] * 4 + [c.feed_limit_m])
 
-    def command(self, actual_shortening, feed, tip, tip_velocity, goal, previous_action):
+    def command(self, actual_shortening, feed, tip, tip_velocity, goal, previous_action, submitted_targets=None, feed_min=None):
         started = time.perf_counter_ns()
         q, tip, velocity, goal, prev = [np.asarray(x, dtype=float) for x in
                                        [actual_shortening, tip, tip_velocity, goal, previous_action]]
@@ -42,19 +42,39 @@ class BoundedDLS:
             raise ValueError('Nonfinite closed-loop feedback')
         cfg = self.config
         t0 = time.perf_counter_ns()
-        j = self.model.jacobian(q, feed)
+        j = getattr(self, 'model_override', None)
+        if j is None:j = self.model.jacobian(q, feed)
         jacobian_us = (time.perf_counter_ns() - t0) / 1000.
         # mm/s scaling keeps the damping terms meaningful and well scaled.
         a = 1000. * j * self.speeds[None, :]
         v_desired = cfg.position_gain_per_s * (goal - tip) - cfg.velocity_damping * velocity
         matrix = np.vstack([a, cfg.damping_mm_s * np.eye(5), cfg.smoothing_mm_s * np.eye(5)])
         rhs = np.r_[1000. * v_desired, np.zeros(5), cfg.smoothing_mm_s * np.clip(prev, -1., 1.)]
-        # Re-anchor cable targets to measured lengths to avoid target windup.
-        reference = np.clip(np.r_[q, feed], -self.limits, self.limits)
+        # Legacy path anchors bounds to measured geometry. Corrected path uses
+        # submitted commands, matching the downstream command integrator.
+        reference = np.clip(np.r_[q, feed] if submitted_targets is None else np.asarray(submitted_targets, float), -self.limits, self.limits)
+        if reference.shape != (5,) or not np.isfinite(reference).all():
+            raise ValueError("Invalid submitted targets")
         scale = self.speeds * cfg.control_period_s
         lower = np.maximum(-1., (-self.limits - reference) / scale)
         upper = np.minimum(1., (self.limits - reference) / scale)
+        if feed_min is not None:
+            lower[4] = max(lower[4], (feed_min-reference[4])/scale[4])
         solution = lsq_linear(matrix, rhs, bounds=(lower, upper), method='bvls', tol=1e-10, max_iter=50)
+        if submitted_targets is not None and abs(float(self.speeds[:4] @ solution.x[:4])) > self.speeds[0]*1e-9:
+            # Match the zero-mean differential command integrator exactly.
+            # Convex quadratic, linear equality and box bounds; analytic gradient.
+            norm = max(float(np.linalg.norm(matrix, ord=2)**2), 1.)
+            def objective(x):
+                residual = matrix @ x-rhs
+                return .5*float(residual @ residual)/norm
+            def gradient(x):
+                return matrix.T @ (matrix @ x-rhs)/norm
+            equality = np.r_[self.speeds[:4]/self.speeds[0], 0.]
+            solution = minimize(objective, np.zeros(5), jac=gradient,
+                method='SLSQP', bounds=list(zip(lower,upper)),
+                constraints=[dict(type='eq',fun=lambda x: float(equality @ x),jac=lambda x: equality)],
+                options=dict(ftol=1e-12,maxiter=100))
         if not solution.success or not np.isfinite(solution.x).all():
             raise RuntimeError('Bounded DLS failed: ' + str(solution.message))
         action = np.clip(solution.x, lower, upper)
@@ -63,7 +83,9 @@ class BoundedDLS:
                     predicted_velocity_m_s=j @ (self.speeds * action),
                     solver_success=bool(solution.success), jacobian_us=jacobian_us,
                     controller_us=(time.perf_counter_ns() - started) / 1000.,
-                    action_saturated=bool(np.any(np.abs(action) > .999)))
+                    action_saturated=bool(np.any(np.abs(action) > .999)),
+                    jacobian=j.tolist(), lower=lower.tolist(), upper=upper.tolist(),
+                    reference_m=reference.tolist(), desired_velocity_m_s=v_desired.tolist())
 
 
 def slew_targets(submitted_shortening, submitted_feed, desired_shortening, desired_feed, robot_config):

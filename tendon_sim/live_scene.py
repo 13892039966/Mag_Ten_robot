@@ -14,6 +14,8 @@ from .logging_output import AsyncKeyboardOutput
 from .actuator_gauge import differential_lengths,differential_jacobian
 from .run_limits import checked_limit,reached_limit,control_stride
 from .released_active import released_active_segment
+from .online_jacobian import WindowedCorrection
+from .stall_recovery import StallRecovery
 
 
 class WorldModel:
@@ -34,7 +36,7 @@ class WorldModel:
 
 
 class Trial(Sofa.Core.Controller):
-    def __init__(self,h,output,reference,visual=False,seconds=None,wall_seconds=300.,zero=False,until_terminal=False,safety_factory=None,controller_config=None,**kwargs):
+    def __init__(self,h,output,reference,visual=False,seconds=None,wall_seconds=300.,zero=False,until_terminal=False,safety_factory=None,controller_config=None,command_bounds=False,adaptive_jacobian=False,stall_recovery=False,**kwargs):
         super().__init__(**kwargs)
         self.h,self.reference,self.output=h,reference,Path(output)
         self.output.mkdir(parents=True,exist_ok=True)
@@ -43,6 +45,10 @@ class Trial(Sofa.Core.Controller):
         self.policy=BoundedDLS(config=DLSConfig(**dls),robot_config=h['config']);self.policy.model=WorldModel(self.policy.model,h)
         self.policy.speeds[:4]*=self.controller_config.get('cable_speed_scale',1.)
         self.policy.speeds[4]*=self.controller_config.get('feed_speed_scale',1.)
+        self.command_bounds=bool(command_bounds)
+        self.adaptive=WindowedCorrection() if adaptive_jacobian else None
+        self.recovery=StallRecovery() if stall_recovery else None
+        self.diagnostic_previous=None
         self.interval=control_stride(self.policy.config.control_period_s,h['config'].dt)
         self.status_interval=max(1,int(round(1./h['config'].dt)))
         self.ticks=0;self.done=False;self.started=time.monotonic();self.wall_seconds=checked_limit(wall_seconds)
@@ -60,7 +66,7 @@ class Trial(Sofa.Core.Controller):
         self.trace=(self.output/'trace.jsonl').open('w',encoding='utf-8',buffering=1)
         self.emit=AsyncKeyboardOutput(self.output/'progress.log')
         d=h['definition'];c=h['config']
-        metadata=dict(controller_parameters=self.controller_config,robot=asdict(c),model_label='active%gmm_passive%gmm'%(c.active_length_m*1000,c.passive_length_m*1000),mode='colon' if h['geometry'] else 'free',
+        metadata=dict(stall_recovery=bool(self.recovery),command_bounds=self.command_bounds,adaptive_jacobian=bool(self.adaptive),controller_parameters=self.controller_config,robot=asdict(c),model_label='active%gmm_passive%gmm'%(c.active_length_m*1000,c.passive_length_m*1000),mode='colon' if h['geometry'] else 'free',
             layout=dict(active_index=d['active_index'],entry=d['entry'].tolist(),direction=d['direction'].tolist(),
                         initial_insertion=d['initial_insertion']),
             physics='native_SOFA_BeamAdapter',dt=c.dt,gravity=[0,0,0],
@@ -97,12 +103,26 @@ class Trial(Sofa.Core.Controller):
             p=np.asarray(self.h['state'].position.value);v=np.asarray(self.h['state'].velocity.value)
             if self.ticks%self.interval==0 and not self.zero:
                 goal,_=self.reference.target(self.ticks*self.h['config'].dt,p[-1,:3])
-                self.last=self.policy.command(differential_lengths(self.actual_q()),self.h['feed_m'],p[-1,:3],v[-1,:3],goal,self.previous)
+                measured=differential_lengths(self.actual_q())
+                submitted=np.r_[self.h['shortening'],self.h['feed_m']]
+                base=self.policy.model.jacobian(measured,self.h['feed_m'])
+                if self.adaptive:
+                    self.adaptive.observe(submitted,p[-1,:3],base)
+                    self.policy.model_override=self.adaptive.correct(base)
+                kwargs=dict(submitted_targets=submitted,feed_min=0.) if self.command_bounds else {}
+                self.last=self.policy.command(measured,self.h['feed_m'],p[-1,:3],v[-1,:3],goal,self.previous,**kwargs)
+                self.diagnostic_previous=dict(tip=p[-1,:3].copy(),submitted=submitted.copy(),measured=measured.copy())
                 self.previous=self.last['action']
                 # Slack tendons do not track guide length; integrate the bounded
                 # command instead of resetting it to measured slack geometry.
                 q_next=self.h['shortening']+self.policy.speeds[:4]*self.policy.config.control_period_s*self.previous[:4]
                 self.desired=np.r_[differential_lengths(q_next),self.last['feed_target_m']]
+                if self.recovery:
+                    dls_action=self.previous.copy()
+                    self.desired=self.recovery.apply(self.ticks*self.h['config'].dt,submitted,self.desired,self.policy.speeds,self.policy.config.control_period_s)
+                    if self.recovery.phase!='tracking':
+                        self.previous=(self.desired-submitted)/(self.policy.speeds*self.policy.config.control_period_s)
+                    self.last['dls_action']=dls_action.tolist()
             q,feed=slew_targets(self.h['shortening'],self.h['feed_m'],self.desired[:4],self.desired[4],self.h['config'])
             submit_targets(self.h,q,feed)
         except Exception as e:self.finish('controller_exception',repr(e))
@@ -128,6 +148,19 @@ class Trial(Sofa.Core.Controller):
             row=dict(t=t,phase=phase,error_mm=error,tip_m=p[-1,:3].tolist(),goal_m=goal.tolist(),
                      force_n=forces.tolist(),feed_m=self.h['feed_m'],q_m=self.h['shortening'].tolist(),
                      controller_us=self.last.get('controller_us'),waypoint_index=self.reference.current_index if isinstance(self.reference,RouteReference) else None,waypoint_completed=False,completed_waypoints=getattr(self.reference,'completed_count',None),true_exit_distance_mm=float(np.linalg.norm(p[-1,:3]-self.h['geometry']['exit_position_m'])*1000) if self.h['geometry'] else None,progress_m=getattr(self.reference,'progress_m',None),**self.contact)
+            if self.diagnostic_previous is not None and self.last:
+                before=self.diagnostic_previous
+                executed=np.r_[self.h['shortening'],self.h['feed_m']]-before['submitted']
+                predicted=np.asarray(self.last['jacobian']) @ executed
+                observed=p[-1,:3]-before['tip']
+                row['control_diagnostic']=dict(action=self.previous.tolist(),
+                    lower=self.last['lower'],upper=self.last['upper'],
+                    measured_shortening_m=before['measured'].tolist(),
+                    submitted_before_m=before['submitted'].tolist(),executed_delta_m=executed.tolist(),
+                    predicted_delta_m=predicted.tolist(),observed_delta_m=observed.tolist(),
+                    desired_velocity_m_s=self.last['desired_velocity_m_s'],
+                    correction=self.adaptive.report() if self.adaptive else None,
+                    dls_action=self.last.get('dls_action'),recovery_phase=self.recovery.phase if self.recovery else None)
             arrived=False
             if isinstance(self.reference,RouteReference) and not self.zero:
                 arrived=self.reference.observe(p[-1,:3])
@@ -148,7 +181,10 @@ class Trial(Sofa.Core.Controller):
                     if (t>10. and self.error_history[-1][0]-self.error_history[0][0]>=10.
                         and self.error_history[0][1]-min(x[1] for x in self.error_history)<1. and error>self.reference.arrival_radius_m*1000.
                         and np.any(np.abs(self.h['shortening'])>=c.cable_limit_m-1e-6)):
-                        self.finish('stalled_at_cable_limit',dict(waypoint_index=self.reference.current_index,goal_m=goal.tolist(),error_mm=error,arrival_radius_mm=self.reference.arrival_radius_m*1000,window_s=self.error_history[-1][0]-self.error_history[0][0],best_improvement_mm=self.error_history[0][1]-min(x[1] for x in self.error_history),interpretation='Current controller stalled with saturated cable commands; not proof that the waypoint is physically unreachable'));return
+                        if self.recovery and self.recovery.trigger(t,self.reference.current_index):
+                            self.error_history=[]
+                            (self.output/'recovery_events.json').write_text(json.dumps(self.recovery.events,indent=2))
+                        else:self.finish('stalled_at_cable_limit',dict(waypoint_index=self.reference.current_index,goal_m=goal.tolist(),error_mm=error,arrival_radius_mm=self.reference.arrival_radius_m*1000,window_s=self.error_history[-1][0]-self.error_history[0][0],best_improvement_mm=self.error_history[0][1]-min(x[1] for x in self.error_history),interpretation='Current controller stalled with saturated cable commands; not proof that the waypoint is physically unreachable'));return
         if self.ticks%self.status_interval==0:self.update_status()
         if isinstance(self.reference,RouteReference) and not self.zero and self.reference.reached(p[-1,:3]):
             at_exit=self.h['geometry'] is not None and np.linalg.norm(p[-1,:3]-self.h['geometry']['exit_position_m'])<=.005

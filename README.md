@@ -151,3 +151,28 @@ stalled_at_cable_limit是当前控制器的操作性停止条件（固定点未�
 ```bash
 ./run.sh --dt .02 --cpu 4 --arrival-radius-mm 5 --controller-config tuning/configs/gain10.json --until-terminal --wall-seconds 600 --output outputs/reproduce_gain10
 ```
+
+## 固定目标停滞诊断与分项对照（2026-11-02）
+
+新增每控制周期的 `trace.jsonl/control_diagnostic`：DLS动作及上下界、测量绳缩短量、提交命令、实际命令增量、预测/实际末端增量和在线修正状态。`setup/analyze_control.py` 聚合0.4秒窗口、动作与执行差异、末目标和最后10秒。此分析脚本限定20ms物理/控制周期、原始执行器速度；预测残差包含接触和动力学影响，不是唯一因果证明。
+
+默认保留可复现的原控制器。下列模式必须显式开启，物理行程、速度、2N力约束、安全阈值和5mm逐点到达均不放宽：
+
+- `--command-bounds`：以已提交命令计算剩余行程，测量绳长仍用于几何雅可比；显式保证四绳动作加权和为零，使执行层差动投影不改变动作。优先BVLS；若其解不满足差动等式，使用带解析梯度、线性等式和箱约束的SLSQP求解同一凸二次目标。这不是前置形态优化。
+- `--adaptive-jacobian`：要求同时开启命令边界。每20个控制周期（0.4s），用实际命令变化、末端变化和累计几何预测做正则化秩一残差更新；更新率0.15，激励正则50微米，每次更新时将修正范数限制到当时基模型范数的50%以内。缺少激励或窗口位移超过5mm则跳过。相关输入只能辨识其激励方向；不代表完整接触/松绳模型或稳定性保证。本轮出现安全失败，禁止视作已验收默认控制器。
+- `--stall-recovery`：要求命令边界且禁用在线修正。原停滞判据触发后，第一次保持进给2s、DLS继续调整绳；第二次以原限速回撤进给1s（最多5mm）并将绳命令向零缩小（最大1mm），再保持进给2s。每个目标最多两次、全程最多六次；随后恢复原控制及停滞判据。原目标不跳过，安全检查始终执行。它是有限预设脱困序列，不是MPC或基于完整状态分支预测的动作搜索。
+
+复现请使用全新输出目录：
+
+```bash
+source setup/activate.sh
+python setup/profile_run.py --dt .02 --cpu 4 --arrival-radius-mm 5 --until-terminal --wall-seconds 900 --output outputs/reproduce_diagnostic
+python setup/profile_run.py --dt .02 --cpu 4 --arrival-radius-mm 5 --command-bounds --until-terminal --wall-seconds 900 --output outputs/reproduce_command_bounds
+python setup/profile_run.py --dt .02 --cpu 4 --arrival-radius-mm 5 --command-bounds --adaptive-jacobian --until-terminal --wall-seconds 900 --output outputs/reproduce_adaptive
+python setup/profile_run.py --dt .02 --cpu 4 --arrival-radius-mm 5 --command-bounds --stall-recovery --until-terminal --wall-seconds 900 --output outputs/reproduce_recovery
+python setup/analyze_control.py outputs/reproduce_command_bounds
+```
+
+每项正式对照均从原入口初态开始，逐项串行执行；没有使用不完整检查点恢复。原始记录、GIF及完整窗口分析仍保存在忽略的outputs目录。小型数值对照与验证摘要见 `tuning/control_diagnostics_20261102.json`。准备期间主动中止的 `stall_recovery_20261102` 不计入正式对照；正式脱困记录为 `stall_recovery_v2_20261102`。
+
+实测结果：原基线逐帧精确复现，完成78/135点；边界修复消除最后10秒约88.2%的动作执行不一致，但仍完成78点；在线修正在138.98s完成40点后发生3.081mm管壁穿透，安全停止，未采用；有限脱困在458.96s暂停进给后，于475.46s以4.901mm误差到达第79点，最终508.50s在第80点再次停滞（其最小误差7.898mm），完成79/135点。脱困组现实运行358.22s，峰值绳力2N、采样检查未报管壁穿透；四组完整记录及目标切换核验均通过，失败也保留原始记录和GIF。尚未完成整段通行，不将在线修正或脱困模式设为默认。

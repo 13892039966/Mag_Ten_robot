@@ -21,9 +21,14 @@ def main():
     parser.add_argument('--gif-frame-ms',type=int,default=100,help='GIF frame duration in milliseconds (default: 100)')
     parser.add_argument('--arrival-radius-mm',type=float,default=5.,help='Waypoint arrival radius in millimetres (default: 5)')
     parser.add_argument('--trajectory',type=Path,default=Path(__file__).resolve().parent/'assets/trajectories/centerline_10mm.csv',help='Ordered CSV x_m,y_m,z_m in world metres; no resampling')
+    parser.add_argument('--command-bounds',action='store_true',help='Use submitted-command bounds and zero-mean action equality')
+    parser.add_argument('--stall-recovery',action='store_true',help='Finite hold/retract recovery attempts; original safety and goals retained')
+    parser.add_argument('--adaptive-jacobian',action='store_true',help='Bounded windowed online Jacobian correction; requires command bounds')
     parser.add_argument('--controller-config',type=Path,help='JSON control parameters; physical limits unchanged')
     parser.add_argument('--wall-seconds',type=float,default=None,help='Optional experiment wall-time limit')
     a=parser.parse_args()
+    if a.stall_recovery and (not a.command_bounds or a.adaptive_jacobian):parser.error("Recovery trial requires command bounds without adaptive Jacobian")
+    if a.adaptive_jacobian and not a.command_bounds:parser.error("Adaptive Jacobian requires --command-bounds")
     controller_config=json.loads(a.controller_config.read_text()) if a.controller_config else {}
     allowed={'position_gain_per_s','velocity_damping','damping_mm_s','smoothing_mm_s','feed_speed_scale','cable_speed_scale'}
     if not isinstance(controller_config,dict) or set(controller_config)-allowed:parser.error('Unsupported controller config keys')
@@ -69,7 +74,7 @@ def main():
             root.removeObject(root.getObject('BVHNarrowPhase'));root.addObject('ParallelBVHNarrowPhase',name='parallel_narrow',nbThreads=4)
         replace_wall_pre_init(root)
         trial=Trial(h,a.output,reference,seconds=a.seconds,wall_seconds=None,zero=a.zero,until_terminal=a.until_terminal,
-            safety_factory=FastPhantomSafety,controller_config=controller_config,name='Control',listening=True)
+            safety_factory=FastPhantomSafety,controller_config=controller_config,command_bounds=a.command_bounds,adaptive_jacobian=a.adaptive_jacobian,stall_recovery=a.stall_recovery,name='Control',listening=True)
         root.addObject(trial)
         if a.gui:
             from tendon_sim.gui_view import SofaWindow
@@ -85,7 +90,7 @@ def main():
         np.testing.assert_allclose(h['state'].position.value,d['poses'],rtol=0,atol=1e-14)
         assert not np.any(h['state'].velocity.value)
         if not trial.recorder.manifest['total_frames']:trial.initialized()
-        contract=dict(gui=a.gui,visual_backend='Sofa.SofaGL + Qt' if a.gui else None,trajectory=trajectory,wall_time_limit_s=a.wall_seconds,wall_timeout_handling='checked_between_physics_steps',runner_sha256=sha(__file__),controller_parameters=controller_config,robot=asdict(c),platform=platform.platform(),python=platform.python_version(),cpu_pool_actual=actual_thread_count(),
+        contract=dict(stall_recovery=a.stall_recovery,command_bounds=a.command_bounds,adaptive_jacobian=a.adaptive_jacobian,gui=a.gui,visual_backend='Sofa.SofaGL + Qt' if a.gui else None,trajectory=trajectory,wall_time_limit_s=a.wall_seconds,wall_timeout_handling='checked_between_physics_steps',runner_sha256=sha(__file__),controller_parameters=controller_config,robot=asdict(c),platform=platform.platform(),python=platform.python_version(),cpu_pool_actual=actual_thread_count(),
             control_period_s=.02,control_stride=trial.interval,route_length_m=reference.length_m,initial_insertion_m=0.,
             native_rate_factor=0.,backend='libigl2.6.0_single_closest',dll_sha256=sha(DLL),obj_sha256=sha(OBJ),
             raw_sha256=sha(ASSETS/'wall_libigl_4mm_f64.raw'),force_units='maxForce=2N*dt, measured force=impulse/dt',
